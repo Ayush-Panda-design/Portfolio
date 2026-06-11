@@ -1,6 +1,4 @@
 {
-  "buildCommand": "bun run build && ls -la && find . -maxdepth 4 -type d | grep -v node_modules | grep -v .git | grep -v .tanstack",
   "installCommand": "bun install",
-  "framework": null,
-  "outputDirectory": "dist"
+  "buildCommand": "bun run build"
 }
