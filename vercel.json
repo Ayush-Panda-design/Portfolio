@@ -1,14 +1,6 @@
 {
-  "buildCommand": "bun run build",
+  "buildCommand": "bun run build && ls -la && find . -maxdepth 4 -type d | grep -v node_modules | grep -v .git | grep -v .tanstack",
   "installCommand": "bun install",
   "framework": null,
-  "outputDirectory": ".output/public",
-  "functions": {
-    "api/server.js": {
-      "runtime": "nodejs20.x"
-    }
-  },
-  "rewrites": [
-    { "source": "/(.*)", "destination": "/api/server" }
-  ]
+  "outputDirectory": "dist"
 }
