@@ -3,80 +3,79 @@
 @import "tw-animate-css";
 
 @theme {
-  --color-cream: #faf8f5;
-  --color-cream-alt: #f0ece5;
-  --color-ink: #1a1410;
-  --color-ink-soft: #6b5c4a;
-  --color-muted-warm: #a89880;
-  --color-border-warm: #e8e0d5;
-  --color-accent: #c8430f;
-  --color-accent-hover: #e05010;
-  --color-trust: #2a2118;
-  --color-card: #faf8f5;
+  --color-bg: #070b14;
+  --color-bg-elevated: #0c1220;
+  --color-bg-soft: #111827;
+  --color-surface: #0f1629;
+  --color-ink: #e8edf7;
+  --color-ink-soft: #94a3b8;
+  --color-ink-faint: #64748b;
+  --color-border-line: #1e293b;
+  --color-border-soft: #1a2336;
+  --color-accent: #5eead4;
+  --color-accent-hover: #99f6e4;
+  --color-accent-dim: #134e4a;
+  --color-accent-glow: #2dd4bf33;
 
-  --color-background: #faf8f5;
-  --color-foreground: #1a1410;
-  --color-border: #e8e0d5;
-  --color-ring: #c8430f;
-  --color-primary: #c8430f;
-  --color-primary-foreground: #faf8f5;
-  --color-muted: #f0ece5;
-  --color-muted-foreground: #6b5c4a;
+  --color-background: #070b14;
+  --color-foreground: #e8edf7;
+  --color-border: #1e293b;
+  --color-ring: #5eead4;
+  --color-primary: #5eead4;
+  --color-primary-foreground: #042f2e;
+  --color-muted: #111827;
+  --color-muted-foreground: #94a3b8;
+  --color-card: #0f1629;
 
-  --font-serif: "Cormorant Garamond", Georgia, serif;
-  --font-sans: "DM Sans", system-ui, sans-serif;
+  --font-display: "Syne", system-ui, sans-serif;
+  --font-sans: "Inter", system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
 
-  --radius: 0px;
+  --radius: 12px;
 }
 
 @layer base {
   * {
-    border-color: var(--color-border-warm);
+    border-color: var(--color-border-line);
   }
-  html, body {
-    background-color: var(--color-cream);
+  html {
+    scroll-behavior: smooth;
+  }
+  html,
+  body {
+    background-color: var(--color-bg);
     color: var(--color-ink);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
   ::selection {
     background: var(--color-accent);
-    color: var(--color-cream);
+    color: var(--color-bg);
   }
 }
 
-/* Custom utilities */
-@utility font-serif { font-family: var(--font-serif); }
-@utility font-sans { font-family: var(--font-sans); }
-@utility font-mono { font-family: var(--font-mono); }
+@utility font-display {
+  font-family: var(--font-display);
+}
+@utility font-sans {
+  font-family: var(--font-sans);
+}
+@utility font-mono {
+  font-family: var(--font-mono);
+}
 
-/* Improved mask for sharper image rendering */
 @utility hero-mask {
-  /* Changing 0% to 15% and 25% to 30% makes the mask transition 
-     happen much faster, so more of your photo stays perfectly sharp. */
-  -webkit-mask-image: linear-gradient(to right, transparent 15%, black 30%);
-  mask-image: linear-gradient(to right, transparent 15%, black 30%);
-}
-
-@utility link-draw {
-  position: relative;
-  display: inline-block;
-  &::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    bottom: -2px;
-    height: 1px;
-    width: 100%;
-    background: currentColor;
-    transform: scaleX(1);
-    transform-origin: left;
-    transition: transform 0.4s ease;
-  }
-  &:hover::after {
-    transform: scaleX(1);
-  }
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    black 55%,
+    transparent 100%
+  ),
+    linear-gradient(to left, black 70%, transparent 100%);
+  mask-image: linear-gradient(to bottom, black 55%, transparent 100%),
+    linear-gradient(to left, black 70%, transparent 100%);
+  -webkit-mask-composite: source-in;
+  mask-composite: intersect;
 }
 
 @utility link-hover-draw {
@@ -101,19 +100,80 @@
 }
 
 @utility marquee {
-  animation: marquee 30s linear infinite;
+  animation: marquee 28s linear infinite;
 }
 
 @keyframes marquee {
-  from { transform: translateX(0); }
-  to { transform: translateX(-50%); }
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
 }
 
 @keyframes blink {
-  0%, 49% { opacity: 1; }
-  50%, 100% { opacity: 0; }
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes float-glow {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.45;
+  }
+  50% {
+    transform: translate(4%, -3%) scale(1.08);
+    opacity: 0.7;
+  }
+}
+
+@keyframes grid-drift {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 48px 48px;
+  }
+}
+
+@keyframes sparkle {
+  0%,
+  100% {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(1);
+  }
 }
 
 @utility cursor-blink {
   animation: blink 1s steps(2) infinite;
+}
+
+@utility ambient-glow {
+  animation: float-glow 12s ease-in-out infinite;
+}
+
+@utility grid-bg {
+  background-image:
+    linear-gradient(to right, #1e293b33 1px, transparent 1px),
+    linear-gradient(to bottom, #1e293b33 1px, transparent 1px);
+  background-size: 48px 48px;
+  animation: grid-drift 40s linear infinite;
+}
+
+@utility glass {
+  background: rgba(12, 18, 32, 0.72);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
 }

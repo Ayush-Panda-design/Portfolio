@@ -1546,7 +1546,6 @@ function memoSupports(callback, supportsFlag) {
   return () => supportsFlags[supportsFlag] ?? memoized();
 }
 const supportsScrollTimeline = /* @__PURE__ */ memoSupports(() => window.ScrollTimeline !== void 0, "scrollTimeline");
-const supportsViewTimeline = /* @__PURE__ */ memoSupports(() => window.ViewTimeline !== void 0, "viewTimeline");
 const supportsLinearEasing = /* @__PURE__ */ memoSupports(() => {
   try {
     document.createElement("div").animate({ opacity: 0 }, { easing: "linear(0, 1)" });
@@ -2966,7 +2965,7 @@ const getValueAsType = (value, type) => {
 function isHTMLElement(element) {
   return isObject(element) && "offsetHeight" in element && !("ownerSVGElement" in element);
 }
-const { schedule: microtask, cancel: cancelMicrotask } = /* @__PURE__ */ createRenderBatcher(queueMicrotask, false);
+const { schedule: microtask } = /* @__PURE__ */ createRenderBatcher(queueMicrotask, false);
 const isDragging = {
   x: false,
   y: false
@@ -3262,20 +3261,6 @@ function resizeWindow(callback) {
 }
 function resize(a, b) {
   return typeof a === "function" ? resizeWindow(a) : resizeElement(a, b);
-}
-function observeTimeline(update, timeline) {
-  let prevProgress;
-  const onFrame = () => {
-    const { currentTime } = timeline;
-    const percentage = currentTime === null ? 0 : currentTime.value;
-    const progress2 = percentage / 100;
-    if (prevProgress !== progress2) {
-      update(progress2);
-    }
-    prevProgress = progress2;
-  };
-  frame.preUpdate(onFrame, true);
-  return () => cancelFrame(onFrame);
 }
 function isSVGSVGElement(element) {
   return isSVGElement(element) && element.tagName === "svg";
@@ -6037,7 +6022,6 @@ const HTMLProjectionNode = createProjectionNode({
   checkIsScrollRoot: (instance) => Boolean(window.getComputedStyle(instance).position === "fixed")
 });
 export {
-  transform as $,
   createBox as A,
   eachAxis as B,
   measurePageBox as C,
@@ -6057,17 +6041,12 @@ export {
   hover as Q,
   press as R,
   SVGVisualElement as S,
-  supportsViewTimeline as T,
-  supportsScrollTimeline as U,
-  interpolate as V,
-  defaultOffset as W,
-  observeTimeline as X,
-  cancelMicrotask as Y,
-  motionValue as Z,
-  collectMotionValues as _,
+  motionValue as T,
+  collectMotionValues as U,
+  transform as V,
+  attachFollow as W,
+  resolveElements as X,
   isMotionValue as a,
-  attachFollow as a0,
-  resolveElements as a1,
   isControllingVariants as b,
   isVariantLabel as c,
   isForcedMotionValue as d,

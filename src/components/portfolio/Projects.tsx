@@ -1,188 +1,158 @@
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
-import { PlusIcon as Plus, XIcon as X, ArrowUpRightIcon as ArrowUpRight } from "lucide-react";
+import {
+  ArrowUpRightIcon as ArrowUpRight,
+  ExternalLinkIcon as ExternalLink,
+  ChevronDownIcon as ChevronDown,
+  ShieldCheckIcon as ShieldCheck,
+} from "lucide-react";
+import { Github } from "./icons";
 import { SectionLabel } from "./SectionLabel";
+import { TextGenerate } from "./effects/TextGenerate";
+import { SpotlightCard } from "./effects/Spotlight";
+import { PRODUCTION } from "@/data/projects";
+import { cn } from "@/lib/utils";
 
-type Project = {
-  num: string;
-  title: string;
-  tag: string;
-  stack: string[];
-  description: string;
-  links?: { label: string; href: string }[];
-  comingSoon?: boolean;
+const ACCENT: Record<string, { bar: string; badge: string; glow: string }> = {
+  teal: {
+    bar: "from-accent/40 via-sky-500/20 to-transparent",
+    badge: "border-accent/30 bg-accent/10 text-accent",
+    glow: "hover:shadow-[0_24px_48px_-28px_rgba(94,234,212,0.5)]",
+  },
+  violet: {
+    bar: "from-violet-400/40 via-fuchsia-500/15 to-transparent",
+    badge: "border-violet-400/30 bg-violet-400/10 text-violet-300",
+    glow: "hover:shadow-[0_24px_48px_-28px_rgba(167,139,250,0.5)]",
+  },
+  amber: {
+    bar: "from-amber-400/35 via-orange-500/15 to-transparent",
+    badge: "border-amber-400/30 bg-amber-400/10 text-amber-200",
+    glow: "hover:shadow-[0_24px_48px_-28px_rgba(251,191,36,0.45)]",
+  },
+  pink: {
+    bar: "from-pink-400/35 via-rose-500/15 to-transparent",
+    badge: "border-pink-400/30 bg-pink-400/10 text-pink-200",
+    glow: "hover:shadow-[0_24px_48px_-28px_rgba(244,114,182,0.45)]",
+  },
 };
 
-const PROJECTS: Project[] = [
-  {
-    num: "01",
-    title: "Edinform",
-    tag: "Live Product",
-    stack: ["Next.js", "Node.js", "PostgreSQL", "Drizzle ORM", "Tailwind"],
-    description:
-      "[TODO: write Edinform description — what it does, what problem it solves, what you owned end-to-end.]",
-    links: [{ label: "Visit Site", href: "https://edinform.in" }],
-  },
-  {
-    num: "02",
-    title: "Votora",
-    tag: "Full-Stack",
-    stack: ["React", "Express", "WebSockets", "PostgreSQL", "Redis", "Docker"],
-    description:
-      "[TODO: write Votora description — realtime architecture, Redis pub/sub, scaling story.]",
-    links: [
-      { label: "Visit site", href: "https://votora-client-jaam.vercel.app/poll/7C5D4BCD" },
-     
-    ],
-  },
-  {
-    num: "03",
-    title: "Coming Soon",
-    tag: "In Progress",
-    stack: [],
-    description: "",
-    comingSoon: true,
-  },
-];
-
-function Card({ p, i }: { p: Project; i: number }) {
-  const [open, setOpen] = useState(false);
-  const [hover, setHover] = useState(false);
-
-  if (p.comingSoon) {
-    return (
-      <motion.div
-        initial={{ y: 30, opacity: 0 }}
-        whileInView={{ y: 0, opacity: 1 }}
-        viewport={{ once: true, margin: "-60px" }}
-        transition={{ duration: 0.6, delay: i * 0.1 }}
-        className="flex min-h-[260px] flex-col items-center justify-center p-8 text-center"
-        style={{ border: "2px dashed #c8430f55", borderRadius: 4, background: "transparent" }}
-      >
-        <div className="font-serif text-7xl text-[color:#c8430f]" style={{ opacity: 0.25 }}>
-          {p.num}
-        </div>
-        <div className="mt-4 font-serif text-2xl text-[color:#1a1410]">Coming Soon</div>
-        <div className="mt-2 font-mono text-[11px] uppercase tracking-[0.22em] text-[color:#a89880]">
-          Something new in the oven
-        </div>
-      </motion.div>
-    );
-  }
-
-  return (
-    <motion.div
-      layout
-      initial={{ y: 30, opacity: 0 }}
-      whileInView={{ y: 0, opacity: 1 }}
-      viewport={{ once: true, margin: "-60px" }}
-      transition={{ duration: 0.6, delay: i * 0.1 }}
-      onMouseEnter={() => setHover(true)}
-      onMouseLeave={() => setHover(false)}
-      onClick={() => setOpen((v) => !v)}
-      className="relative cursor-pointer p-8 transition-shadow"
-      style={{
-        background: "#faf8f5",
-        border: "1px solid #e8e0d5",
-        borderRadius: 4,
-        transform: hover
-          ? "perspective(1000px) rotateX(2deg) rotateY(-3deg) translateY(-4px)"
-          : "perspective(1000px) rotateX(0) rotateY(0)",
-        transition: "transform .5s ease, box-shadow .3s ease",
-        boxShadow: hover ? "0 30px 60px -30px #1a141033" : "none",
-      }}
-    >
-      <div
-        className="absolute inset-x-0 top-0 transition-all"
-        style={{ height: hover ? 3 : 1, background: hover ? "#c8430f" : "#e8e0d5" }}
-      />
-      <motion.div layout="position" className="flex items-start justify-between gap-4">
-        <div>
-          <div className="font-serif text-7xl" style={{ color: "#c8430f", opacity: 0.18 }}>
-            {p.num}
-          </div>
-          <div className="mt-4 flex items-center gap-3">
-            <span
-              className="font-mono text-[10px] uppercase tracking-[0.22em]"
-              style={{ padding: "4px 10px", border: "1px solid #c8430f", color: "#c8430f" }}
-            >
-              {p.tag}
-            </span>
-          </div>
-          <h3 className="mt-4 font-serif text-4xl text-[color:#1a1410]">{p.title}</h3>
-          <div className="mt-3 flex flex-wrap gap-2">
-            {p.stack.map((s) => (
-              <span key={s} className="font-mono text-[11px] text-[color:#6b5c4a]">
-                {s}
-              </span>
-            )).reduce<React.ReactNode[]>((acc, el, idx) => {
-              if (idx > 0) acc.push(<span key={`d${idx}`} className="text-[color:#c8430f]">·</span>);
-              acc.push(el);
-              return acc;
-            }, [])}
-          </div>
-        </div>
-        <motion.span animate={{ rotate: open ? 45 : 0 }} className="text-[color:#c8430f]">
-          {open ? <X size={20} /> : <Plus size={20} />}
-        </motion.span>
-      </motion.div>
-
-      <AnimatePresence initial={false}>
-        {open && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.35 }}
-            className="overflow-hidden"
-          >
-            <p className="mt-6 font-sans text-[14px] leading-[1.8] text-[color:#6b5c4a]">
-              {p.description}
-            </p>
-            {p.links && (
-              <div className="mt-6 flex flex-wrap gap-4">
-                {p.links.map((l) => (
-                  <a
-                    key={l.href}
-                    href={l.href}
-                    target="_blank"
-                    rel="noreferrer"
-                    onClick={(e) => e.stopPropagation()}
-                    className="link-hover-draw inline-flex items-center gap-1 font-mono text-[11px] uppercase tracking-[0.2em]"
-                    style={{ color: "#c8430f" }}
-                  >
-                    {l.label} <ArrowUpRight size={14} />
-                  </a>
-                ))}
-              </div>
-            )}
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </motion.div>
-  );
-}
-
 export function Projects() {
-  return (
-    <section id="projects" className="py-24 lg:py-32" style={{ background: "#f0ece5" }}>
-      <div className="mx-auto max-w-[1400px] px-6 lg:px-12">
-        <SectionLabel>SELECTED&nbsp;WORK</SectionLabel>
-        <motion.h2
-          initial={{ y: 24, opacity: 0 }}
-          whileInView={{ y: 0, opacity: 1 }}
-          viewport={{ once: true, margin: "-80px" }}
-          transition={{ duration: 0.7 }}
-          className="max-w-[820px] font-serif text-4xl leading-[1.1] text-[color:#1a1410] sm:text-5xl lg:text-[56px]"
-        >
-          Projects — <span className="italic">built, shipped, learned from.</span>
-        </motion.h2>
+  const [openId, setOpenId] = useState<string | null>(PRODUCTION[0].id);
 
-        <div className="mt-14 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {PROJECTS.map((p, i) => (
-            <Card key={p.num} p={p} i={i} />
-          ))}
-        </div>
+  return (
+    <section id="projects" className="scroll-mt-24 border-t border-border-line pt-14 lg:pt-16">
+      <div className="mb-2 flex items-center gap-2">
+        <ShieldCheck size={14} className="text-accent" />
+        <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-accent">
+          Production grade
+        </span>
+      </div>
+      <SectionLabel num="04.">Shipped products</SectionLabel>
+      <h2 className="font-display text-2xl font-bold leading-snug tracking-tight text-ink sm:text-3xl">
+        <TextGenerate words="Real systems, unique features, live users." />
+      </h2>
+      <p className="mt-3 text-[14px] leading-relaxed text-ink-soft">
+        End-to-end products with auth, data models, realtime, and deploy — not tutorial clones.
+      </p>
+
+      <div className="mt-8 space-y-4">
+        {PRODUCTION.map((p, i) => {
+          const open = openId === p.id;
+          const a = ACCENT[p.accent] ?? ACCENT.teal;
+          return (
+            <motion.div
+              key={p.id}
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.06 }}
+            >
+              <SpotlightCard className={cn("transition-shadow duration-500", a.glow)}>
+                <div className={cn("pointer-events-none absolute inset-0 bg-gradient-to-br", a.bar)} />
+                <button
+                  type="button"
+                  onClick={() => setOpenId(open ? null : p.id)}
+                  className="relative w-full p-5 text-left sm:p-6"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="font-mono text-[11px] text-ink-faint">{p.num}</span>
+                        <span className={cn("rounded-full border px-2.5 py-0.5 font-mono text-[10px] uppercase tracking-wider", a.badge)}>
+                          {p.tag}
+                        </span>
+                      </div>
+                      <h3 className="mt-2 font-display text-xl font-bold text-ink sm:text-2xl">{p.title}</h3>
+                      <p className="mt-2 text-[14px] leading-relaxed text-ink-soft">{p.summary}</p>
+                    </div>
+                    <motion.span
+                      animate={{ rotate: open ? 180 : 0 }}
+                      className="mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-border-line bg-bg/70 text-accent"
+                    >
+                      <ChevronDown size={15} />
+                    </motion.span>
+                  </div>
+                  <div className="mt-4 flex flex-wrap gap-1.5">
+                    {p.stack.slice(0, 5).map((s) => (
+                      <span key={s} className="rounded-full border border-border-line/80 bg-bg/50 px-2.5 py-1 font-mono text-[10px] text-ink-soft">
+                        {s}
+                      </span>
+                    ))}
+                    {p.stack.length > 5 && (
+                      <span className="px-1 font-mono text-[10px] text-ink-faint">+{p.stack.length - 5}</span>
+                    )}
+                  </div>
+                </button>
+
+                <AnimatePresence initial={false}>
+                  {open && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.32 }}
+                      className="relative overflow-hidden"
+                    >
+                      <div className="border-t border-border-line/70 px-5 pb-5 pt-4 sm:px-6">
+                        <p className="mb-3 font-mono text-[10px] uppercase tracking-[0.16em] text-accent">
+                          Unique features
+                        </p>
+                        <ul className="space-y-2">
+                          {p.features.map((f) => (
+                            <li key={f} className="flex gap-2 text-[13px] text-ink-soft">
+                              <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-accent" />
+                              {f}
+                            </li>
+                          ))}
+                        </ul>
+                        <div className="mt-5 flex flex-wrap gap-2">
+                          {p.live && (
+                            <a
+                              href={p.live}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="inline-flex items-center gap-1.5 rounded-full bg-accent px-4 py-2 text-[12px] font-semibold text-primary-foreground hover:bg-accent-hover"
+                            >
+                              <ExternalLink size={13} /> Live
+                            </a>
+                          )}
+                          <a
+                            href={p.github}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="inline-flex items-center gap-1.5 rounded-full border border-border-line px-4 py-2 text-[12px] font-semibold text-ink hover:border-accent/40 hover:text-accent"
+                          >
+                            <Github size={14} /> Source <ArrowUpRight size={12} />
+                          </a>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </SpotlightCard>
+            </motion.div>
+          );
+        })}
       </div>
     </section>
   );

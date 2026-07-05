@@ -1,6 +1,7 @@
-import { motion, useScroll, useTransform } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
-import { Github, Linkedin, Twitter, Hashnode } from "./icons";
+import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
+import { MovingBorder } from "./effects/MovingBorder";
+import { TextGenerate } from "./effects/TextGenerate";
 
 const TYPE_PHRASES = [
   "for startups.",
@@ -8,6 +9,8 @@ const TYPE_PHRASES = [
   "for founders who ship.",
   "for companies that care about quality.",
 ];
+
+const AVATAR = "https://i.ibb.co/sYzb6rs/Gemini-Generated-Image-b7cnr4b7cnr4b7cn.png";
 
 function Typewriter() {
   const [i, setI] = useState(0);
@@ -35,145 +38,125 @@ function Typewriter() {
   }, [text, deleting, i]);
 
   return (
-    <span className="font-serif text-2xl text-[color:#1a1410] md:text-3xl">
-      {text}
-      <span className="cursor-blink ml-0.5 inline-block" style={{ color: "#c8430f" }}>|</span>
+    <span className="font-display text-lg text-ink-soft">
+      Building {text}
+      <span className="cursor-blink ml-0.5 inline-block text-accent">|</span>
     </span>
   );
 }
 
 export function Hero() {
-  const ref = useRef<HTMLDivElement>(null);
-  const { scrollY } = useScroll();
-  const y = useTransform(scrollY, [0, 600], [0, -180]);
-
   return (
-    <section
-      ref={ref}
-      className="relative overflow-hidden pt-28 lg:pt-32"
-      style={{ background: "#faf8f5" }}
-    >
-      <div className="mx-auto grid max-w-[1400px] grid-cols-1 gap-10 px-6 pb-12 lg:grid-cols-[52fr_48fr] lg:gap-0 lg:px-12 lg:pb-24 lg:pt-12">
-        {/* LEFT */}
-        <div className="order-2 lg:order-1 lg:pr-10">
-          <motion.h1
-            initial={{ y: 24, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.7, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-            className="font-serif text-[44px] leading-[1.05] text-[color:#1a1410] sm:text-6xl lg:text-[72px]"
-          >
-            Full-Stack Web Developer
-          </motion.h1>
-          <motion.p
-            initial={{ y: 24, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.7, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
-            className="mt-3 font-serif text-3xl italic text-[color:#1a1410] sm:text-4xl lg:text-[48px]"
-          >
-            & Production-Grade Apps
-          </motion.p>
-
-          <svg width="100%" height="2" viewBox="0 0 600 2" preserveAspectRatio="none" className="mt-10 block max-w-[420px]">
-            <motion.line
-              x1="0" y1="1" x2="600" y2="1"
-              stroke="#1a1410" strokeWidth="1"
-              initial={{ pathLength: 0 }}
-              animate={{ pathLength: 1 }}
-              transition={{ duration: 1.1, delay: 0.5, ease: "easeInOut" }}
-            />
-          </svg>
-
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6 }} className="mt-6">
-            <Typewriter />
-          </motion.div>
-
-          <motion.p
-            initial={{ y: 18, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.7, delay: 0.8 }}
-            className="mt-8 max-w-[520px] font-sans text-[15px] leading-[1.7] text-[color:#6b5c4a]"
-          >
-            I'm Ayush Panda — a CS undergrad at VSSUT (4th semester, CGPA 8.27) building real,
-            shipped products. Let's craft something performant, typed end-to-end, and worth using.
-          </motion.p>
-
-          <motion.div
-            initial={{ y: 18, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.7, delay: 0.85 }}
-            className="mt-10 flex items-end gap-6 sm:gap-10"
-          >
-            {[
-              { n: "3+", l: "Projects" },
-              { n: "8.27", l: "CGPA" },
-              { n: "4th", l: "Semester" },
-            ].map((s, idx) => (
-              <div key={s.l} className="flex items-end gap-6 sm:gap-10">
-                <div>
-                  <div className="font-serif text-3xl text-[color:#1a1410] sm:text-4xl">{s.n}</div>
-                  <div className="mt-1 font-mono text-[10px] uppercase tracking-[0.18em] text-[color:#a89880]">
-                    {s.l}
-                  </div>
-                </div>
-                {idx < 2 && <div className="h-10 w-px bg-[color:#e8e0d5]" />}
-              </div>
-            ))}
-          </motion.div>
-
-          <motion.div
-            initial={{ y: 18, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.7, delay: 1.0 }}
-            className="mt-10 flex flex-wrap items-center gap-8"
-          >
-            <a href="#projects" className="link-hover-draw font-sans text-[12px] font-semibold uppercase tracking-[0.2em]" style={{ color: "#c8430f" }}>
-              VIEW MY PROJECTS →
-            </a>
-            <a href="#contact" className="link-hover-draw font-sans text-[12px] font-semibold uppercase tracking-[0.2em]" style={{ color: "#c8430f" }}>
-              LET'S CONNECT →
-            </a>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1.1 }}
-            className="mt-10 flex items-center gap-5 text-[color:#a89880]"
-          >
-            {[
-              { icon: Github, href: "https://github.com/", label: "GitHub" },
-              { icon: Linkedin, href: "https://linkedin.com/", label: "LinkedIn" },
-              { icon: Twitter, href: "https://twitter.com/", label: "Twitter" },
-              { icon: Hashnode, href: "https://hashnode.com/", label: "Hashnode" },
-            ].map(({ icon: Icon, href, label }) => (
-              <a key={label} href={href} target="_blank" rel="noreferrer" aria-label={label} className="transition-colors hover:text-[color:#c8430f]">
-                <Icon size={18} strokeWidth={1.5} />
-              </a>
-            ))}
-          </motion.div>
+    <section id="intro" className="pb-10">
+      {/* Mobile-only identity + avatar */}
+      <div className="mb-8 lg:hidden">
+        <MovingBorder containerClassName="mb-4 inline-flex" className="px-3 py-1">
+          <span className="font-mono text-[10px] tracking-[0.16em] text-accent">Open to work</span>
+        </MovingBorder>
+        <div className="flex items-start gap-4">
+          <div className="h-20 w-20 shrink-0 overflow-hidden rounded-2xl border border-accent/30">
+            <img src={AVATAR} alt="Ayush Panda" className="h-full w-full object-cover object-top" />
+          </div>
+          <div>
+            <h1 className="font-display text-3xl font-bold tracking-tight text-ink">Ayush Panda</h1>
+            <p className="mt-1 font-mono text-[12px] tracking-[0.12em] text-accent">Full-Stack Developer</p>
+          </div>
         </div>
-
-        {/* RIGHT — photo */}
-        <motion.div
-          initial={{ x: 60, opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          transition={{ duration: 0.9, delay: 1.0, ease: [0.22, 1, 0.36, 1] }}
-          className="order-1 lg:order-2 relative"
-        >
-          <motion.div
-            style={{ y }}
-            className="relative h-[420px] sm:h-[520px] lg:h-[640px] lg:-mr-[max(0px,calc((100vw-1400px)/2))]"
-          >
-            <img
-              src="https://i.ibb.co/sYzb6rs/Gemini-Generated-Image-b7cnr4b7cnr4b7cn.png"
-              alt="Ayush Panda holding a laptop"
-              width={1024}
-              height={1024}
-              className="hero-mask absolute inset-0 h-full w-full object-cover object-top"
-            />
-          </motion.div>
-        </motion.div>
       </div>
+
+      {/* Desktop avatar — sits above intro in the content column */}
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="mb-8 hidden lg:block"
+      >
+        <div className="relative inline-block">
+          <div className="absolute -inset-2 rounded-2xl bg-accent/10 blur-xl" />
+          <div className="relative w-[200px] overflow-hidden rounded-2xl border border-white/10 shadow-2xl">
+            <img
+              src={AVATAR}
+              alt="Ayush Panda holding a laptop"
+              width={400}
+              height={500}
+              className="aspect-[4/5] w-full object-cover object-top"
+            />
+            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-bg/95 to-transparent px-3 pb-3 pt-8">
+              <div className="flex items-center gap-2 rounded-lg border border-white/10 bg-bg/70 px-2.5 py-1.5 backdrop-blur-md">
+                <span className="relative flex h-2 w-2">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent opacity-50" />
+                  <span className="relative inline-flex h-2 w-2 rounded-full bg-accent" />
+                </span>
+                <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-accent">Available</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </motion.div>
+
+      <motion.p
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="font-mono text-[12px] tracking-[0.2em] text-accent"
+      >
+        Hi, I&apos;m Ayush —
+      </motion.p>
+
+      <h2 className="mt-3 font-display text-3xl font-bold leading-tight tracking-tight text-ink sm:text-4xl">
+        <TextGenerate words="I build production-grade full-stack web apps." />
+      </h2>
+
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }} className="mt-4">
+        <Typewriter />
+      </motion.div>
+
+      <motion.p
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.55 }}
+        className="mt-5 text-[15px] leading-[1.8] text-ink-soft"
+      >
+        CS undergrad at VSSUT (4th semester, CGPA 8.27). Focused on type-safe APIs, careful UI, and shipping
+        software that actually runs in production.
+      </motion.p>
+
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.7 }}
+        className="mt-7 flex flex-wrap items-center gap-3"
+      >
+        <a
+          href="#projects"
+          className="inline-flex items-center rounded-full bg-accent px-5 py-2.5 text-[13px] font-semibold text-primary-foreground transition-all hover:bg-accent-hover hover:shadow-[0_0_32px_-8px_var(--color-accent)]"
+        >
+          View projects
+        </a>
+        <a
+          href="#learning"
+          className="inline-flex items-center rounded-full border border-border-line px-5 py-2.5 text-[13px] font-semibold text-ink transition-colors hover:border-accent/40 hover:text-accent"
+        >
+          Practice trail
+        </a>
+      </motion.div>
+
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.85 }}
+        className="mt-8 flex items-center gap-8"
+      >
+        {[
+          { n: "20+", l: "Projects" },
+          { n: "8.27", l: "CGPA" },
+          { n: "4th", l: "Semester" },
+        ].map((s) => (
+          <div key={s.l}>
+            <div className="font-display text-2xl font-bold text-ink">{s.n}</div>
+            <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-ink-faint">{s.l}</div>
+          </div>
+        ))}
+      </motion.div>
     </section>
   );
 }
