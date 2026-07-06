@@ -10,6 +10,7 @@ import { Github } from "./icons";
 import { SectionLabel } from "./SectionLabel";
 import { TextGenerate } from "./effects/TextGenerate";
 import { SpotlightCard } from "./effects/Spotlight";
+import { ProjectCover, ProjectGallery } from "./ProjectGallery";
 import { PRODUCTION } from "@/data/projects";
 import { cn } from "@/lib/utils";
 
@@ -69,6 +70,9 @@ export function Projects() {
             >
               <SpotlightCard className={cn("transition-shadow duration-500", a.glow)}>
                 <div className={cn("pointer-events-none absolute inset-0 bg-gradient-to-br", a.bar)} />
+                {p.screenshots[0] && !open && (
+                  <ProjectCover shot={p.screenshots[0]} accent={p.accent} />
+                )}
                 <button
                   type="button"
                   onClick={() => setOpenId(open ? null : p.id)}
@@ -114,6 +118,9 @@ export function Projects() {
                       className="relative overflow-hidden"
                     >
                       <div className="border-t border-border-line/70 px-5 pb-5 pt-4 sm:px-6">
+                        <div className="mb-6">
+                          <ProjectGallery screenshots={p.screenshots} accent={p.accent} />
+                        </div>
                         <p className="mb-3 font-mono text-[10px] uppercase tracking-[0.16em] text-accent">
                           Unique features
                         </p>

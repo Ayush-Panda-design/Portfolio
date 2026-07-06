@@ -1,3 +1,10 @@
+export type ProjectScreenshot = {
+  src?: string;
+  label: string;
+  alt: string;
+  placeholder?: boolean;
+};
+
 export type ProductionProject = {
   id: string;
   num: string;
@@ -6,6 +13,7 @@ export type ProductionProject = {
   summary: string;
   features: string[];
   stack: string[];
+  screenshots: ProjectScreenshot[];
   live?: string;
   github: string;
   accent: string;
@@ -42,6 +50,23 @@ export const PRODUCTION: ProductionProject[] = [
       "tRPC + Drizzle + Turborepo production architecture",
     ],
     stack: ["Next.js", "Express", "tRPC", "Drizzle", "PostgreSQL", "Redis", "Turborepo"],
+    screenshots: [
+      {
+        src: "/projects/edinform-landing.png",
+        label: "Landing page",
+        alt: "EdinForm marketing landing page with form builder preview",
+      },
+      {
+        src: "/projects/edinform-analytics.png",
+        label: "Analytics dashboard",
+        alt: "EdinForm workspace analytics with charts and metrics",
+      },
+      {
+        src: "/projects/edinform-templates.png",
+        label: "Template library",
+        alt: "EdinForm template gallery with categorized form starters",
+      },
+    ],
     live: "https://edinform.in",
     github: "https://github.com/Ayush-Panda-design/EdinForm11",
     accent: "teal",
@@ -60,6 +85,23 @@ export const PRODUCTION: ProductionProject[] = [
       "BetterAuth, Prisma, Vercel AI SDK",
     ],
     stack: ["Next.js", "tRPC", "Prisma", "PostgreSQL", "Inngest", "OpenRouter", "GitHub App"],
+    screenshots: [
+      {
+        src: "/projects/shipflow-landing.png",
+        label: "Landing page",
+        alt: "ShipFlow AI landing page with delivery workflow visualization",
+      },
+      {
+        src: "/projects/shipflow-task-board.png",
+        label: "Task board",
+        alt: "ShipFlow AI Kanban task board with AI codegen integration",
+      },
+      {
+        src: "/projects/shipflow-review-history.png",
+        label: "AI review history",
+        alt: "ShipFlow AI pull request review history with blocking checks",
+      },
+    ],
     live: "https://shipflowai.in",
     github: "https://github.com/Ayush-Panda-design/ShipFlowAI",
     accent: "violet",
@@ -68,7 +110,7 @@ export const PRODUCTION: ProductionProject[] = [
     id: "relvion",
     num: "03",
     title: "Relvion AI",
-    tag: "AI Workspace",
+    tag: "AI · Live",
     summary:
       "Superhuman-style Gmail & Calendar — AI triage, semantic search, and an MCP agent that acts for you.",
     features: [
@@ -78,6 +120,24 @@ export const PRODUCTION: ProductionProject[] = [
       "Webhook → SSE realtime pipeline",
     ],
     stack: ["Next.js", "TypeScript", "PostgreSQL", "pgvector", "Gemini", "Corsair", "MCP"],
+    screenshots: [
+      {
+        src: "/projects/relvion-landing.png",
+        label: "Landing page",
+        alt: "Relvion AI landing page for inbox, calendar, and AI workspace",
+      },
+      {
+        src: "/projects/relvion-inbox.png",
+        label: "Inbox & AI agent",
+        alt: "Relvion AI triaged inbox with embedded workspace assistant",
+      },
+      {
+        src: "/projects/relvion-compose.png",
+        label: "Gmail compose",
+        alt: "Relvion AI new message composer powered by Gmail via Corsair",
+      },
+    ],
+    live: "https://relvion-ai.vercel.app/",
     github: "https://github.com/Ayush-Panda-design/Relvion-AI",
     accent: "amber",
   },
@@ -95,7 +155,24 @@ export const PRODUCTION: ProductionProject[] = [
       "JWT httpOnly cookies, Google OAuth, rate limits",
     ],
     stack: ["React", "Redux", "Express", "MongoDB", "Socket.io", "JWT", "Recharts"],
-    live: "https://votora-client-jaam.vercel.app/poll/7C5D4BCD",
+    screenshots: [
+      {
+        src: "/projects/votora-landing.png",
+        label: "Landing page",
+        alt: "Votora realtime polling platform landing page with live poll mockup",
+      },
+      {
+        src: "/projects/votora-create-poll.png",
+        label: "Create poll",
+        alt: "Votora poll creation wizard with security scoring",
+      },
+      {
+        src: "/projects/votora-profile.png",
+        label: "Profile workspace",
+        alt: "Votora user profile and account management dashboard",
+      },
+    ],
+    live: "https://votora-client-jaam.vercel.app",
     github: "https://github.com/Ayush-Panda-design/Votora-Real-Time-Polling-Platform",
     accent: "pink",
   },
