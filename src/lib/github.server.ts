@@ -1,9 +1,9 @@
 const OWNER = "Ayush-Panda-design";
 
 const TREE_CACHE_TTL_MS = 10 * 60 * 1000;
-const MAX_FILES = 20;
+const MAX_FILES = 30;
 const MAX_BYTES_PER_FILE = 9_000;
-const MAX_TOTAL_CODE_BYTES = 58_000;
+const MAX_TOTAL_CODE_BYTES = 90_000;
 
 const SKIP_DIR = new Set([
   "node_modules",
