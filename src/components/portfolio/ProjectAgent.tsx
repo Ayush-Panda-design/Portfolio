@@ -106,10 +106,12 @@ export function ProjectAgent({ project }: { project: ProductionProject }) {
   const [loading, setLoading] = useState(false);
   const [syncedAt, setSyncedAt] = useState<string | null>(null);
   const [filesUsed, setFilesUsed] = useState<number | null>(null);
-  const endRef = useRef<HTMLDivElement>(null);
+  const chatRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    endRef.current?.scrollIntoView({ behavior: "smooth" });
+    const el = chatRef.current;
+    if (!el) return;
+    el.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
   }, [messages, loading]);
 
   const playDemo = () => {
@@ -237,7 +239,10 @@ export function ProjectAgent({ project }: { project: ProductionProject }) {
 
           {/* Chat */}
           <div className="agent-panel-mesh relative">
-            <div className="agent-scroll agent-chat-fade flex max-h-[min(480px,58vh)] flex-col gap-4 overflow-y-auto px-4 py-4">
+            <div
+              ref={chatRef}
+              className="agent-scroll agent-chat-fade flex max-h-[min(480px,58vh)] flex-col gap-4 overflow-y-auto px-4 py-4"
+            >
               {messages.map((m, i) => (
                 <MessageBubble key={`${m.role}-${i}`} message={m} agentName={detail.agentName} index={i} />
               ))}
@@ -301,7 +306,6 @@ export function ProjectAgent({ project }: { project: ProductionProject }) {
                   </div>
                 </motion.div>
               )}
-              <div ref={endRef} />
             </div>
           </div>
 
