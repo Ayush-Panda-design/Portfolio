@@ -16,7 +16,7 @@ export const PROJECT_DETAILS: Record<string, ProjectDetail> = {
     repo: "EdinForm11",
     agentName: "EdinForm Guide",
     agentIntro:
-      "I'm synced to the GitHub repo — ask about architecture, APIs, or deployment. Here's a sample from a real question:",
+      "I read the live GitHub README and repo docs — ask about architecture, APIs, deployment, or implementation details.",
     agentDemo: {
       question: "What's the monorepo structure?",
       answer: `EdinForm runs on **Turborepo + pnpm** with shared packages:
@@ -84,7 +84,7 @@ Key capabilities enforced server-side:
     repo: "ShipFlowAI",
     agentName: "ShipFlow Analyst",
     agentIntro:
-      "I'm synced to the GitHub repo — ask about the delivery loop, AI reviews, or background jobs. Sample exchange:",
+      "I read the live GitHub README — ask about the delivery loop, AI reviews, Inngest jobs, or GitHub integration.",
     agentDemo: {
       question: "What's the delivery loop from idea to ship?",
       answer: `ShipFlow threads every stage into one workspace:
@@ -142,7 +142,7 @@ Background work runs on **Inngest** (PR reviews, crons, codegen) while clarify/r
     repo: "Relvion-AI",
     agentName: "Relvion Expert",
     agentIntro:
-      "I'm synced to the GitHub repo — ask about search, Corsair, or the MCP agent. Sample exchange:",
+      "I read the live GitHub README — ask about Corsair, pgvector search, the MCP agent, or realtime sync.",
     agentDemo: {
       question: "How does semantic search work?",
       answer: `Search runs a **tiered pipeline** — fastest source wins:
@@ -206,7 +206,7 @@ OAuth-only — mail stays in Google; Relvion is the workspace layer, not a migra
     repo: "Votora-Real-Time-Polling-Platform",
     agentName: "Votora Host",
     agentIntro:
-      "I'm synced to the GitHub repo — ask about realtime sync, auth, or the split deploy. Sample exchange:",
+      "I read the live GitHub README — ask about Socket.io rooms, quiz anti-cheat, auth, or the Vercel + Render split.",
     agentDemo: {
       question: "How do live polls sync in realtime?",
       answer: `Each poll gets a **Socket.io room** scoped by poll ID:

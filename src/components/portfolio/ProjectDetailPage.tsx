@@ -71,7 +71,7 @@ export function ProjectDetailPage({ project }: { project: ProductionProject }) {
           </a>
         </M>
 
-        <div className="mt-8 lg:grid lg:grid-cols-[1fr_340px] lg:gap-10 xl:grid-cols-[1fr_380px]">
+        <div className="mt-8 lg:grid lg:grid-cols-[1fr_400px] lg:gap-10 xl:grid-cols-[1fr_440px]">
           <div className="min-w-0">
             <MSection {...(ready ? { ...reveal, className: "mb-10" } : { className: "mb-10" })}>
               <div className="flex flex-wrap items-center gap-2">
@@ -190,7 +190,7 @@ export function ProjectDetailPage({ project }: { project: ProductionProject }) {
             </MSection>
           </div>
 
-          <aside className="mt-10 lg:mt-0">
+          <aside className="mt-10 lg:mt-0 lg:sticky lg:top-8 lg:self-start">
             {ready ? (
               <motion.div
                 initial={{ opacity: 0, x: 20 }}

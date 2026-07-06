@@ -224,7 +224,7 @@ function BlockView({ block }: { block: Block }) {
     case "code":
     case "tree":
       return (
-        <pre className="overflow-x-auto rounded-lg border border-border-line/80 bg-bg/90 px-3 py-2.5 font-mono text-[11px] leading-relaxed text-ink-soft">
+        <pre className="overflow-x-auto rounded-xl border border-border-line/70 bg-[#060a12] px-3 py-3 font-mono text-[10.5px] leading-[1.65] text-ink-soft shadow-inner">
           <code>
             {block.lines.map((l, idx) => (
               <span key={idx} className="block whitespace-pre">

@@ -195,3 +195,59 @@
     background: #334155;
   }
 }
+
+@utility agent-panel-mesh {
+  background-image:
+    radial-gradient(ellipse 90% 60% at 50% -10%, rgba(94, 234, 212, 0.09), transparent 55%),
+    linear-gradient(to right, #1e293b28 1px, transparent 1px),
+    linear-gradient(to bottom, #1e293b28 1px, transparent 1px);
+  background-size: 100% 100%, 20px 20px, 20px 20px;
+}
+
+@utility agent-chat-fade {
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0,
+    black 20px,
+    black calc(100% - 28px),
+    transparent 100%
+  );
+}
+
+@keyframes agent-border-shift {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes agent-live-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.55;
+    transform: scale(0.92);
+  }
+}
+
+@utility agent-border-glow {
+  background: linear-gradient(
+    135deg,
+    rgba(94, 234, 212, 0.55),
+    rgba(94, 234, 212, 0.12) 40%,
+    rgba(139, 92, 246, 0.25) 70%,
+    rgba(94, 234, 212, 0.35)
+  );
+  background-size: 200% 200%;
+  animation: agent-border-shift 8s ease infinite;
+}
+
+@utility agent-live-dot {
+  animation: agent-live-pulse 2s ease-in-out infinite;
+}
