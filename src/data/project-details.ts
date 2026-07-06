@@ -6,6 +6,7 @@ export type ProjectDetail = {
   deployment: { label: string; href: string }[];
   agentName: string;
   agentIntro: string;
+  agentDemo: { question: string; answer: string };
   suggestedQuestions: string[];
   repo: string;
 };
@@ -15,7 +16,29 @@ export const PROJECT_DETAILS: Record<string, ProjectDetail> = {
     repo: "EdinForm11",
     agentName: "EdinForm Guide",
     agentIntro:
-      "Ask me about the monorepo, tRPC API, conditional logic, analytics, deployment on edinform.in, or anything in the GitHub repo.",
+      "I'm synced to the GitHub repo — ask about architecture, APIs, or deployment. Here's a sample from a real question:",
+    agentDemo: {
+      question: "What's the monorepo structure?",
+      answer: `EdinForm runs on **Turborepo + pnpm** with shared packages:
+
+\`\`\`
+edinform/
+├── apps/
+│   ├── api/          Express + tRPC (port 8000)
+│   └── web/          Next.js 16 App Router
+├── packages/
+│   ├── database/     Drizzle ORM + PostgreSQL
+│   ├── trpc/         Shared routers
+│   └── validators/   Zod schemas everywhere
+\`\`\`
+
+Key capabilities enforced server-side:
+
+- [x] Response limits
+- [x] Form expiry (403 after close)
+- [x] Rate limiting via Upstash Redis
+- [ ] Client-only checks — never used for limits`,
+    },
     suggestedQuestions: [
       "How does conditional logic work?",
       "What's the monorepo structure?",
@@ -61,7 +84,20 @@ export const PROJECT_DETAILS: Record<string, ProjectDetail> = {
     repo: "ShipFlowAI",
     agentName: "ShipFlow Analyst",
     agentIntro:
-      "Ask about the delivery loop, GitHub App reviews, Inngest jobs, task board, AI codegen, or how ShipFlow ties requirements to PRs.",
+      "I'm synced to the GitHub repo — ask about the delivery loop, AI reviews, or background jobs. Sample exchange:",
+    agentDemo: {
+      question: "What's the delivery loop from idea to ship?",
+      answer: `ShipFlow threads every stage into one workspace:
+
+1. **Discover** — dashboard intake from email, tickets, or calls
+2. **Clarify** — AI follow-ups + duplicate detection
+3. **Plan** — requirements doc → tasks → human plan approval
+4. **Build** — GitHub repos synced, PRs linked to features
+5. **Review** — AI diffs vs approved requirements (blocking/non-blocking)
+6. **Ship** — release readiness → human approval → optional auto-merge
+
+Background work runs on **Inngest** (PR reviews, crons, codegen) while clarify/requirements stay inline for fast UI.`,
+    },
     suggestedQuestions: [
       "How does AI PR review work?",
       "What's the delivery loop from idea to ship?",
@@ -106,7 +142,26 @@ export const PROJECT_DETAILS: Record<string, ProjectDetail> = {
     repo: "Relvion-AI",
     agentName: "Relvion Expert",
     agentIntro:
-      "Ask about Gmail/Calendar via Corsair, pgvector search, MCP agent, priority triage, webhooks, or the Superhuman-style UX.",
+      "I'm synced to the GitHub repo — ask about search, Corsair, or the MCP agent. Sample exchange:",
+    agentDemo: {
+      question: "How does semantic search work?",
+      answer: `Search runs a **tiered pipeline** — fastest source wins:
+
+- Gmail operators → Corsair local cache
+- **pgvector** semantic fallback on Postgres
+- Live Gmail API as last resort
+- Calendar events included in the same query
+
+\`\`\`
+User query
+    │
+    ├── operator match (Corsair DB)
+    ├── vector similarity (pgvector)
+    └── live Gmail API
+\`\`\`
+
+OAuth-only — mail stays in Google; Relvion is the workspace layer, not a migration.`,
+    },
     suggestedQuestions: [
       "How does semantic search work?",
       "What is Corsair's role?",
@@ -151,7 +206,27 @@ export const PROJECT_DETAILS: Record<string, ProjectDetail> = {
     repo: "Votora-Real-Time-Polling-Platform",
     agentName: "Votora Host",
     agentIntro:
-      "Ask about Socket.io rooms, quiz anti-cheat, dual timers, MongoDB aggregations, JWT auth, or the Vercel + Render split.",
+      "I'm synced to the GitHub repo — ask about realtime sync, auth, or the split deploy. Sample exchange:",
+    agentDemo: {
+      question: "How do live polls sync in realtime?",
+      answer: `Each poll gets a **Socket.io room** scoped by poll ID:
+
+\`\`\`
+Host starts poll
+    │
+    └── room: poll:{id}
+            ├── vote events → all clients
+            ├── lobby timer sync
+            └── Recharts dashboard updates
+\`\`\`
+
+Deploy split:
+
+- [x] React SPA on Vercel
+- [x] Express API on Render
+- [x] MongoDB Atlas + aggregation pipelines
+- [x] JWT httpOnly cookies + Bearer fallback for cross-origin`,
+    },
     suggestedQuestions: [
       "How do live polls sync in realtime?",
       "How does quiz tab monitoring work?",
