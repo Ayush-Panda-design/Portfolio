@@ -1,7 +1,11 @@
 import { PROJECT_DETAILS } from "@/data/project-details";
 import { PROJECT_KNOWLEDGE } from "@/data/project-knowledge";
 import { getProductionProject } from "@/data/projects";
-import { fetchRepoSnapshot } from "@/lib/github.server";
+import {
+  fetchRelevantCode,
+  fetchRepoSnapshot,
+  formatCodeContext,
+} from "@/lib/github.server";
 
 type ChatInput = {
   projectId: string;
@@ -43,8 +47,8 @@ async function callLlm(system: string, user: string, history: { role: string; co
           ...history.slice(-8),
           { role: "user", content: user },
         ],
-        max_tokens: 900,
-        temperature: 0.35,
+        max_tokens: 1100,
+        temperature: 0.25,
       }),
     });
     if (res.ok) {
@@ -70,7 +74,7 @@ async function callLlm(system: string, user: string, history: { role: string; co
             })),
             { role: "user", parts: [{ text: user }] },
           ],
-          generationConfig: { maxOutputTokens: 900, temperature: 0.35 },
+          generationConfig: { maxOutputTokens: 1100, temperature: 0.25 },
         }),
       },
     );
@@ -86,12 +90,22 @@ async function callLlm(system: string, user: string, history: { role: string; co
   return null;
 }
 
-function fallbackAnswer(projectTitle: string, query: string, context: string, github: string): string {
-  const excerpt = retrieveContext(context, query, 5);
+function fallbackAnswer(
+  projectTitle: string,
+  query: string,
+  context: string,
+  github: string,
+  filesUsed: number,
+): string {
+  const excerpt = retrieveContext(context, query, 6);
   if (!excerpt) {
-    return `I don't have enough context for that specific question about ${projectTitle}. Browse the case study sections above or check the source at ${github}.`;
+    return `I couldn't find enough in the repository for that question about ${projectTitle}. Browse the case study above or inspect the source at ${github}.`;
   }
-  return `Here's what I can tell you about **${projectTitle}** based on the repository documentation:\n\n${excerpt}\n\nFor deeper implementation detail, see the GitHub repo: ${github}`;
+  const scanned =
+    filesUsed > 0
+      ? `I scanned **${filesUsed} source file(s)** from the live repo. `
+      : "";
+  return `${scanned}Here's what I found about **${projectTitle}**:\n\n${excerpt}\n\nFull codebase: ${github}`;
 }
 
 export async function runProjectAgent(data: ChatInput) {
@@ -100,48 +114,72 @@ export async function runProjectAgent(data: ChatInput) {
   const knowledge = PROJECT_KNOWLEDGE[data.projectId];
 
   if (!project || !detail || !knowledge) {
-    return { reply: "Unknown project.", syncedAt: null as string | null };
+    return { reply: "Unknown project.", syncedAt: null as string | null, filesUsed: 0 };
   }
 
   const snapshot = await fetchRepoSnapshot(detail.repo);
   const syncedAt = snapshot?.pushedAt ?? null;
+  const branch = snapshot?.defaultBranch ?? "main";
 
-  const staticCtx = retrieveContext(knowledge, data.message, 6);
-  const readmeCtx = snapshot?.readme ? retrieveContext(snapshot.readme, data.message, 4) : "";
+  const [codeCtx] = await Promise.all([
+    fetchRelevantCode(detail.repo, data.message, branch),
+  ]);
 
-  const system = `You are ${detail.agentName}, a dedicated technical assistant for the project "${project.title}" by Ayush Panda (full-stack developer, CS undergrad at VSSUT).
+  const staticCtx = retrieveContext(knowledge, data.message, 4);
+  const readmeCtx = snapshot?.readme ? retrieveContext(snapshot.readme, data.message, 3) : "";
+  const codeBlock = formatCodeContext(codeCtx);
+  const filesUsed = codeCtx.files.length;
 
-Your job: answer recruiters, hiring managers, and engineers asking about architecture, features, tech stack, deployment, security, and implementation — using ONLY the context below.
+  const system = `You are ${detail.agentName} — a senior engineer who has read the GitHub repository for "${project.title}" by Ayush Panda.
 
-Rules:
-- Be accurate, concise, and professional (2-6 short paragraphs max).
-- If the answer isn't in context, say you don't know and point to ${project.github}.
-- Mention live URL when relevant: ${project.live ?? "see GitHub"}.
-- Do not invent features or metrics not in context.
-- GitHub repo last pushed: ${syncedAt ?? "unknown"}.
+You have LIVE access to:
+1. Actual source files from the repo (selected by relevance to the user's question)
+2. README excerpts
+3. Curated project notes
 
---- PORTFOLIO SUMMARY ---
+Your audience: recruiters, hiring managers, and engineers evaluating this portfolio project.
+
+## How to answer
+- Ground every claim in the SOURCE CODE and README below — cite file paths when referencing implementation (e.g. \`apps/api/src/routes/forms.ts\`).
+- Explain *how* things work: functions, routes, schemas, data flow, auth, deployment wiring.
+- Use short paragraphs, bullet lists, or code references. Max 6 paragraphs.
+- If the code context doesn't contain the answer, say clearly: "I don't see that in the files I scanned" and point to ${project.github}.
+- Never invent endpoints, env vars, or metrics not present in context.
+- Live product URL: ${project.live ?? "see GitHub"}
+- Repo last pushed: ${syncedAt ?? "unknown"}
+- Files loaded for this question: ${filesUsed} of ${codeCtx.totalPaths} tracked paths
+
+## Portfolio summary
 ${project.summary}
 Stack: ${project.stack.join(", ")}
-Features: ${project.features.join("; ")}
 
---- CURATED REPO KNOWLEDGE ---
+## Curated notes
 ${staticCtx}
 
---- LIVE GITHUB README EXCERPT ---
-${readmeCtx || "(README fetch unavailable — using curated knowledge)"}`;
+## README excerpt
+${readmeCtx || "(README unavailable)"}
+
+## LIVE SOURCE CODE (GitHub — ${detail.repo})
+${codeBlock}`;
 
   const history = (data.history ?? []).map((m) => ({
     role: m.role,
     content: m.content,
   }));
 
+  const fallbackContext =
+    knowledge +
+    "\n\n" +
+    (snapshot?.readme ?? "") +
+    "\n\n" +
+    codeCtx.files.map((f) => `FILE: ${f.path}\n${f.content}`).join("\n\n");
+
   const llmReply = await callLlm(system, data.message, history);
   const reply =
     llmReply ??
-    fallbackAnswer(project.title, data.message, knowledge + "\n" + (snapshot?.readme ?? ""), project.github);
+    fallbackAnswer(project.title, data.message, fallbackContext, project.github, filesUsed);
 
-  return { reply, syncedAt };
+  return { reply, syncedAt, filesUsed };
 }
 
 export async function getProjectSync(data: { projectId: string }) {

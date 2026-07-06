@@ -25,7 +25,7 @@ const ACCENT_GLOW: Record<string, string> = {
   pink: "from-pink-400/50 via-rose-400/20 to-fuchsia-500/30",
 };
 
-const CAPABILITIES = ["README", "Architecture", "Deploy", "Stack"];
+const CAPABILITIES = ["Source code", "README", "Architecture", "Deploy"];
 
 function formatSync(date: string | null) {
   if (!date) return "curated knowledge";
@@ -105,6 +105,7 @@ export function ProjectAgent({ project }: { project: ProductionProject }) {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [syncedAt, setSyncedAt] = useState<string | null>(null);
+  const [filesUsed, setFilesUsed] = useState<number | null>(null);
   const endRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -129,7 +130,7 @@ export function ProjectAgent({ project }: { project: ProductionProject }) {
     setMessages(next);
     setLoading(true);
     try {
-      const { reply, syncedAt: sync } = await askProjectAgent({
+      const { reply, syncedAt: sync, filesUsed: files } = await askProjectAgent({
         data: {
           projectId: project.id,
           message: q,
@@ -137,6 +138,7 @@ export function ProjectAgent({ project }: { project: ProductionProject }) {
         },
       });
       if (sync) setSyncedAt(sync);
+      if (files != null) setFilesUsed(files);
       setMessages((m) => [...m, { role: "assistant", content: reply }]);
     } catch {
       setMessages((m) => [
@@ -177,7 +179,7 @@ export function ProjectAgent({ project }: { project: ProductionProject }) {
               <div className="flex items-center gap-1.5">
                 <Zap size={11} className="text-accent" />
                 <span className="font-mono text-[9px] font-semibold uppercase tracking-[0.2em] text-accent">
-                  Repo-aware AI
+                  Code-aware AI
                 </span>
               </div>
               <div className="flex items-center gap-1.5 rounded-full border border-emerald-500/25 bg-emerald-500/8 px-2 py-0.5">
@@ -214,7 +216,9 @@ export function ProjectAgent({ project }: { project: ProductionProject }) {
                   Ayush-Panda-design/{detail.repo}
                 </a>
                 <p className="mt-1.5 font-mono text-[9px] uppercase tracking-[0.12em] text-ink-faint">
-                  Synced · {formatSync(syncedAt)}
+                  {filesUsed != null
+                    ? `Last scan · ${filesUsed} source file${filesUsed === 1 ? "" : "s"}`
+                    : `Synced · ${formatSync(syncedAt)}`}
                 </p>
               </div>
             </div>
@@ -282,7 +286,7 @@ export function ProjectAgent({ project }: { project: ProductionProject }) {
                       {detail.agentName}
                     </p>
                     <div className="flex items-center gap-2 rounded-2xl border border-border-line bg-bg-elevated/90 px-4 py-3">
-                      <span className="font-mono text-[11px] text-ink-soft">Querying repository</span>
+                      <span className="font-mono text-[11px] text-ink-soft">Scanning source files</span>
                       <span className="flex gap-1">
                         {[0, 1, 2].map((d) => (
                           <motion.span
