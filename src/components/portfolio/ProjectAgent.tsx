@@ -27,6 +27,28 @@ const ACCENT_GLOW: Record<string, string> = {
 
 const CAPABILITIES = ["Source code", "README", "Architecture", "Deploy"];
 
+const CHAT_STORAGE_PREFIX = "portfolio-agent-chat-";
+
+function loadStoredChat(projectId: string, intro: string): { messages: Msg[]; demoPlayed: boolean } {
+  if (typeof window === "undefined") {
+    return { messages: [{ role: "assistant", content: intro }], demoPlayed: false };
+  }
+  try {
+    const raw = sessionStorage.getItem(`${CHAT_STORAGE_PREFIX}${projectId}`);
+    if (!raw) return { messages: [{ role: "assistant", content: intro }], demoPlayed: false };
+    const parsed = JSON.parse(raw) as { messages?: Msg[]; demoPlayed?: boolean };
+    if (!parsed.messages?.length) {
+      return { messages: [{ role: "assistant", content: intro }], demoPlayed: false };
+    }
+    return {
+      messages: parsed.messages,
+      demoPlayed: parsed.demoPlayed ?? parsed.messages.length > 2,
+    };
+  } catch {
+    return { messages: [{ role: "assistant", content: intro }], demoPlayed: false };
+  }
+}
+
 function formatSync(date: string | null) {
   if (!date) return "curated knowledge";
   return new Date(date).toLocaleDateString("en-IN", {
@@ -98,15 +120,29 @@ export function ProjectAgent({ project }: { project: ProductionProject }) {
 
   const glow = ACCENT_GLOW[project.accent] ?? ACCENT_GLOW.teal;
 
-  const [messages, setMessages] = useState<Msg[]>([
-    { role: "assistant", content: detail.agentIntro },
-  ]);
-  const [demoPlayed, setDemoPlayed] = useState(false);
+  const stored = loadStoredChat(project.id, detail.agentIntro);
+
+  const [messages, setMessages] = useState<Msg[]>(stored.messages);
+  const [demoPlayed, setDemoPlayed] = useState(stored.demoPlayed);
+  const [askedQuestions, setAskedQuestions] = useState<Set<string>>(() => {
+    const asked = new Set<string>();
+    for (const m of stored.messages) {
+      if (m.role === "user") asked.add(m.content);
+    }
+    return asked;
+  });
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [syncedAt, setSyncedAt] = useState<string | null>(null);
   const [filesUsed, setFilesUsed] = useState<number | null>(null);
   const chatRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    sessionStorage.setItem(
+      `${CHAT_STORAGE_PREFIX}${project.id}`,
+      JSON.stringify({ messages, demoPlayed }),
+    );
+  }, [messages, demoPlayed, project.id]);
 
   useEffect(() => {
     const el = chatRef.current;
@@ -117,6 +153,7 @@ export function ProjectAgent({ project }: { project: ProductionProject }) {
   const playDemo = () => {
     if (demoPlayed || loading) return;
     setDemoPlayed(true);
+    setAskedQuestions((prev) => new Set(prev).add(detail.agentDemo.question));
     setMessages((m) => [
       ...m,
       { role: "user", content: detail.agentDemo.question },
@@ -128,15 +165,17 @@ export function ProjectAgent({ project }: { project: ProductionProject }) {
     const q = text.trim();
     if (!q || loading) return;
     setInput("");
-    const next: Msg[] = [...messages, { role: "user", content: q }];
-    setMessages(next);
+    setAskedQuestions((prev) => new Set(prev).add(q));
+
+    setMessages((prev) => [...prev, { role: "user", content: q }]);
     setLoading(true);
+
     try {
       const { reply, syncedAt: sync, filesUsed: files } = await askProjectAgent({
         data: {
           projectId: project.id,
           message: q,
-          history: next.slice(-10),
+          history: messages,
         },
       });
       if (sync) setSyncedAt(sync);
@@ -315,23 +354,39 @@ export function ProjectAgent({ project }: { project: ProductionProject }) {
               Ask anything
             </p>
             <div className="mb-3 space-y-1.5">
-              {detail.suggestedQuestions.map((q) => (
-                <button
-                  key={q}
-                  type="button"
-                  onClick={() => send(q)}
-                  disabled={loading}
-                  className="group flex w-full items-center justify-between gap-2 rounded-xl border border-border-line/80 bg-surface/40 px-3 py-2.5 text-left transition-all hover:border-accent/40 hover:bg-accent/6 disabled:opacity-40"
-                >
-                  <span className="text-[11px] leading-snug text-ink-soft transition-colors group-hover:text-ink">
-                    {q}
-                  </span>
-                  <ArrowRight
-                    size={12}
-                    className="shrink-0 text-ink-faint transition-all group-hover:translate-x-0.5 group-hover:text-accent"
-                  />
-                </button>
-              ))}
+              {detail.suggestedQuestions.map((q) => {
+                const asked = askedQuestions.has(q);
+                return (
+                  <button
+                    key={q}
+                    type="button"
+                    onClick={() => send(q)}
+                    disabled={loading || asked}
+                    className={cn(
+                      "group flex w-full items-center justify-between gap-2 rounded-xl border px-3 py-2.5 text-left transition-all disabled:opacity-40",
+                      asked
+                        ? "border-accent/25 bg-accent/5"
+                        : "border-border-line/80 bg-surface/40 hover:border-accent/40 hover:bg-accent/6",
+                    )}
+                  >
+                    <span
+                      className={cn(
+                        "text-[11px] leading-snug",
+                        asked ? "text-accent" : "text-ink-soft group-hover:text-ink",
+                      )}
+                    >
+                      {asked ? "✓ " : ""}
+                      {q}
+                    </span>
+                    {!asked && (
+                      <ArrowRight
+                        size={12}
+                        className="shrink-0 text-ink-faint transition-all group-hover:translate-x-0.5 group-hover:text-accent"
+                      />
+                    )}
+                  </button>
+                );
+              })}
             </div>
 
             <form

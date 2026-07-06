@@ -5,31 +5,120 @@ import {
   fetchRelevantCode,
   fetchRepoSnapshot,
   formatCodeContext,
+  type CodeContext,
 } from "@/lib/github.server";
+
+type ChatMsg = { role: "user" | "assistant"; content: string };
 
 type ChatInput = {
   projectId: string;
   message: string;
-  history?: { role: "user" | "assistant"; content: string }[];
+  history?: ChatMsg[];
 };
 
+function queryTerms(query: string): string[] {
+  return [...new Set(query.toLowerCase().split(/\W+/).filter((t) => t.length > 2))];
+}
+
+function buildSearchQuery(message: string, history: ChatMsg[]): string {
+  const recentUser = history
+    .filter((m) => m.role === "user")
+    .slice(-2)
+    .map((m) => m.content);
+  return [message, ...recentUser].join(" ");
+}
+
+function trimContent(text: string, max = 1200): string {
+  return text.length > max ? `${text.slice(0, max)}…` : text;
+}
+
+/** Drop intro-only assistant turns; remove duplicate current user message. */
+function normalizeHistory(history: ChatMsg[], currentMessage: string): ChatMsg[] {
+  let h = history
+    .filter((m) => m.content.trim())
+    .map((m) => ({ role: m.role, content: trimContent(m.content) }));
+
+  if (h.at(-1)?.role === "user" && h.at(-1)?.content === currentMessage) {
+    h = h.slice(0, -1);
+  }
+
+  while (h.length > 0 && h[0].role === "assistant") {
+    h = h.slice(1);
+  }
+
+  return h.slice(-10);
+}
+
 function retrieveContext(knowledge: string, query: string, maxChunks = 4): string {
+  const terms = queryTerms(query);
   const chunks = knowledge.split(/\n{2,}/).filter(Boolean);
-  const terms = query.toLowerCase().split(/\W+/).filter((t) => t.length > 2);
+
   const scored = chunks
-    .map((chunk) => {
+    .map((chunk, index) => {
       const lower = chunk.toLowerCase();
-      const score = terms.reduce((n, t) => n + (lower.includes(t) ? 1 : 0), 0);
+      let score = terms.reduce((n, t) => n + (lower.includes(t) ? 2 : 0), 0);
+      if (score === 0) score = index * 0.01;
       return { chunk, score };
     })
     .sort((a, b) => b.score - a.score);
+
   return scored
     .slice(0, maxChunks)
     .map((s) => s.chunk)
     .join("\n\n");
 }
 
-async function callLlm(system: string, user: string, history: { role: string; content: string }[]) {
+function retrieveFromCodeFiles(files: CodeContext["files"], query: string): string {
+  const terms = queryTerms(query);
+  if (!files.length) return "";
+
+  const hits: { path: string; lines: string[]; score: number }[] = [];
+
+  for (const file of files) {
+    const lines = file.content.split("\n");
+    const matching = lines.filter((line) => {
+      const lower = line.toLowerCase();
+      return terms.some((t) => lower.includes(t));
+    });
+    const pathScore = terms.reduce(
+      (n, t) => n + (file.path.toLowerCase().includes(t) ? 3 : 0),
+      0,
+    );
+    const score = matching.length * 2 + pathScore;
+    if (score > 0) hits.push({ path: file.path, lines: matching.slice(0, 18), score });
+  }
+
+  hits.sort((a, b) => b.score - a.score);
+
+  if (hits.length > 0) {
+    return hits
+      .slice(0, 4)
+      .map(
+        (h) =>
+          `**${h.path}**\n\`\`\`\n${h.lines.join("\n")}\n\`\`\``,
+      )
+      .join("\n\n");
+  }
+
+  return files
+    .slice(0, 2)
+    .map(
+      (f) =>
+        `**${f.path}** (no keyword hit — file preview)\n\`\`\`\n${f.content.slice(0, 600)}\n\`\`\``,
+    )
+    .join("\n\n");
+}
+
+async function callLlm(
+  system: string,
+  user: string,
+  history: ChatMsg[],
+): Promise<string | null> {
+  const messages = [
+    ...history.map((m) => ({ role: m.role, content: m.content })),
+    { role: "user" as const, content: user },
+  ];
+
   const openRouterKey = process.env.OPENROUTER_API_KEY;
   if (openRouterKey) {
     const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
@@ -42,13 +131,9 @@ async function callLlm(system: string, user: string, history: { role: string; co
       },
       body: JSON.stringify({
         model: process.env.OPENROUTER_MODEL ?? "google/gemini-2.0-flash-001",
-        messages: [
-          { role: "system", content: system },
-          ...history.slice(-8),
-          { role: "user", content: user },
-        ],
+        messages: [{ role: "system", content: system }, ...messages],
         max_tokens: 1100,
-        temperature: 0.25,
+        temperature: 0.4,
       }),
     });
     if (res.ok) {
@@ -67,14 +152,11 @@ async function callLlm(system: string, user: string, history: { role: string; co
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           systemInstruction: { parts: [{ text: system }] },
-          contents: [
-            ...history.slice(-6).map((m) => ({
-              role: m.role === "assistant" ? "model" : "user",
-              parts: [{ text: m.content }],
-            })),
-            { role: "user", parts: [{ text: user }] },
-          ],
-          generationConfig: { maxOutputTokens: 1100, temperature: 0.25 },
+          contents: messages.map((m) => ({
+            role: m.role === "assistant" ? "model" : "user",
+            parts: [{ text: m.content }],
+          })),
+          generationConfig: { maxOutputTokens: 1100, temperature: 0.4 },
         }),
       },
     );
@@ -93,19 +175,29 @@ async function callLlm(system: string, user: string, history: { role: string; co
 function fallbackAnswer(
   projectTitle: string,
   query: string,
-  context: string,
+  knowledge: string,
+  readme: string,
+  codeCtx: CodeContext,
   github: string,
-  filesUsed: number,
 ): string {
-  const excerpt = retrieveContext(context, query, 6);
-  if (!excerpt) {
-    return `I couldn't find enough in the repository for that question about ${projectTitle}. Browse the case study above or inspect the source at ${github}.`;
+  const codeExcerpt = retrieveFromCodeFiles(codeCtx.files, query);
+  const docExcerpt = retrieveContext(`${knowledge}\n\n${readme}`, query, 3);
+
+  if (!codeExcerpt && !docExcerpt) {
+    return `I couldn't find enough in the repository for **"${query}"** about ${projectTitle}. Try rephrasing or browse the source at ${github}.`;
   }
-  const scanned =
-    filesUsed > 0
-      ? `I scanned **${filesUsed} source file(s)** from the live repo. `
-      : "";
-  return `${scanned}Here's what I found about **${projectTitle}**:\n\n${excerpt}\n\nFull codebase: ${github}`;
+
+  const parts: string[] = [];
+  if (codeCtx.files.length > 0) {
+    parts.push(
+      `Scanned **${codeCtx.files.length}** source file(s) for your question.`,
+    );
+  }
+  if (codeExcerpt) parts.push(codeExcerpt);
+  if (docExcerpt) parts.push(`**From docs:**\n${docExcerpt}`);
+  parts.push(`Full repo: ${github}`);
+
+  return parts.join("\n\n");
 }
 
 export async function runProjectAgent(data: ChatInput) {
@@ -117,39 +209,47 @@ export async function runProjectAgent(data: ChatInput) {
     return { reply: "Unknown project.", syncedAt: null as string | null, filesUsed: 0 };
   }
 
+  const rawHistory = data.history ?? [];
+  const chatHistory = normalizeHistory(rawHistory, data.message);
+  const searchQuery = buildSearchQuery(data.message, chatHistory);
+
   const snapshot = await fetchRepoSnapshot(detail.repo);
   const syncedAt = snapshot?.pushedAt ?? null;
   const branch = snapshot?.defaultBranch ?? "main";
 
-  const [codeCtx] = await Promise.all([
-    fetchRelevantCode(detail.repo, data.message, branch),
-  ]);
-
-  const staticCtx = retrieveContext(knowledge, data.message, 4);
-  const readmeCtx = snapshot?.readme ? retrieveContext(snapshot.readme, data.message, 3) : "";
+  const codeCtx = await fetchRelevantCode(detail.repo, searchQuery, branch);
+  const staticCtx = retrieveContext(knowledge, searchQuery, 4);
+  const readmeCtx = snapshot?.readme
+    ? retrieveContext(snapshot.readme, searchQuery, 3)
+    : "";
   const codeBlock = formatCodeContext(codeCtx);
   const filesUsed = codeCtx.files.length;
 
-  const system = `You are ${detail.agentName} — a senior engineer who has read the GitHub repository for "${project.title}" by Ayush Panda.
+  const historySummary =
+    chatHistory.length > 0
+      ? chatHistory
+          .slice(-6)
+          .map((m) => `${m.role === "user" ? "User" : "You"}: ${trimContent(m.content, 400)}`)
+          .join("\n")
+      : "(first question in this thread)";
 
-You have LIVE access to:
-1. Actual source files from the repo (selected by relevance to the user's question)
-2. README excerpts
-3. Curated project notes
+  const system = `You are ${detail.agentName} — a senior engineer answering questions about "${project.title}" by Ayush Panda.
 
-Your audience: recruiters, hiring managers, and engineers evaluating this portfolio project.
+You have live GitHub source files, README excerpts, and curated notes below.
 
-## How to answer
-- Ground every claim in the SOURCE CODE and README below — cite file paths when referencing implementation (e.g. \`apps/api/src/routes/forms.ts\`).
-- Explain *how* things work: functions, routes, schemas, data flow, auth, deployment wiring.
-- Use short paragraphs, bullet lists, or code references. Max 6 paragraphs.
-- If the code context doesn't contain the answer, say clearly: "I don't see that in the files I scanned" and point to ${project.github}.
-- Never invent endpoints, env vars, or metrics not present in context.
-- Live product URL: ${project.live ?? "see GitHub"}
-- Repo last pushed: ${syncedAt ?? "unknown"}
-- Files loaded for this question: ${filesUsed} of ${codeCtx.totalPaths} tracked paths
+## Conversation so far
+${historySummary}
 
-## Portfolio summary
+## Rules
+- Answer the **latest user question** specifically. Do NOT repeat your previous answer verbatim.
+- Use the conversation above for follow-ups ("it", "that", "how does that work" → resolve from prior turns).
+- Ground claims in SOURCE CODE — cite paths like \`apps/api/src/routes/forms.ts\`.
+- If missing from context, say you don't see it in the scanned files and link ${project.github}.
+- Never invent features or metrics.
+- Live URL: ${project.live ?? "see GitHub"} · Last push: ${syncedAt ?? "unknown"}
+- Files loaded for this turn: ${filesUsed}
+
+## Portfolio
 ${project.summary}
 Stack: ${project.stack.join(", ")}
 
@@ -157,27 +257,22 @@ Stack: ${project.stack.join(", ")}
 ${staticCtx}
 
 ## README excerpt
-${readmeCtx || "(README unavailable)"}
+${readmeCtx || "(unavailable)"}
 
-## LIVE SOURCE CODE (GitHub — ${detail.repo})
+## LIVE SOURCE CODE (${detail.repo})
 ${codeBlock}`;
 
-  const history = (data.history ?? []).map((m) => ({
-    role: m.role,
-    content: m.content,
-  }));
-
-  const fallbackContext =
-    knowledge +
-    "\n\n" +
-    (snapshot?.readme ?? "") +
-    "\n\n" +
-    codeCtx.files.map((f) => `FILE: ${f.path}\n${f.content}`).join("\n\n");
-
-  const llmReply = await callLlm(system, data.message, history);
+  const llmReply = await callLlm(system, data.message, chatHistory);
   const reply =
     llmReply ??
-    fallbackAnswer(project.title, data.message, fallbackContext, project.github, filesUsed);
+    fallbackAnswer(
+      project.title,
+      data.message,
+      knowledge,
+      snapshot?.readme ?? "",
+      codeCtx,
+      project.github,
+    );
 
   return { reply, syncedAt, filesUsed };
 }
