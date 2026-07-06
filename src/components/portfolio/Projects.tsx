@@ -1,10 +1,12 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
+import { Link } from "@tanstack/react-router";
 import {
   ArrowUpRightIcon as ArrowUpRight,
   ExternalLinkIcon as ExternalLink,
   ChevronDownIcon as ChevronDown,
   ShieldCheckIcon as ShieldCheck,
+  BookOpenIcon as BookOpen,
 } from "lucide-react";
 import { Github } from "./icons";
 import { SectionLabel } from "./SectionLabel";
@@ -67,6 +69,7 @@ export function Projects() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.06 }}
+              whileHover={{ y: -2 }}
             >
               <SpotlightCard className={cn("transition-shadow duration-500", a.glow)}>
                 <div className={cn("pointer-events-none absolute inset-0 bg-gradient-to-br", a.bar)} />
@@ -133,6 +136,13 @@ export function Projects() {
                           ))}
                         </ul>
                         <div className="mt-5 flex flex-wrap gap-2">
+                          <Link
+                            to="/projects/$projectId"
+                            params={{ projectId: p.id }}
+                            className="inline-flex items-center gap-1.5 rounded-full border border-accent/40 bg-accent/10 px-4 py-2 text-[12px] font-semibold text-accent transition-colors hover:bg-accent/20"
+                          >
+                            <BookOpen size={13} /> Case study & AI guide
+                          </Link>
                           {p.live && (
                             <a
                               href={p.live}

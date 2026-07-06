@@ -375,3 +375,9 @@ export const LEARNING_TOPICS: LearningTopic[] = [
 
 export const LEARNING_COUNT = LEARNING_TOPICS.reduce((n, t) => n + t.projects.length, 0);
 export const TOTAL_PROJECTS = PRODUCTION.length + LEARNING_COUNT;
+
+export function getProductionProject(id: string) {
+  return PRODUCTION.find((p) => p.id === id);
+}
+
+export const PRODUCTION_IDS = PRODUCTION.map((p) => p.id);
