@@ -1,9 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Navbar } from "@/components/portfolio/Navbar";
+import { Sidebar, MobileNav } from "@/components/portfolio/Sidebar";
 import { Hero } from "@/components/portfolio/Hero";
 import { TrustBar } from "@/components/portfolio/TrustBar";
 import { About } from "@/components/portfolio/About";
 import { Skills } from "@/components/portfolio/Skills";
+import { LearningPath } from "@/components/portfolio/LearningPath";
 import { Projects } from "@/components/portfolio/Projects";
 import { Blog } from "@/components/portfolio/Blog";
 import { Contact } from "@/components/portfolio/Contact";
@@ -14,7 +15,11 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "Ayush Panda — Full-Stack Web Developer" },
-      { name: "description", content: "CS undergrad at VSSUT building real, shipped full-stack products with React, Next.js, Node.js & PostgreSQL." },
+      {
+        name: "description",
+        content:
+          "CS undergrad at VSSUT building real, shipped full-stack products with React, Next.js, Node.js & PostgreSQL.",
+      },
       { property: "og:title", content: "Ayush Panda — Full-Stack Web Developer" },
       { property: "og:description", content: "CS undergrad at VSSUT building real, shipped full-stack products." },
     ],
@@ -24,17 +29,25 @@ export const Route = createFileRoute("/")({
 
 function Index() {
   return (
-    <main style={{ background: "#faf8f5" }} className="min-h-screen overflow-x-hidden">
+    <main className="min-h-screen bg-bg text-ink">
       <Cursor />
-      <Navbar />
-      <Hero />
-      <TrustBar />
-      <About />
-      <Skills />
-      <Projects />
-      <Blog />
-      <Contact />
-      <Footer />
+      <MobileNav />
+
+      <div className="mx-auto max-w-[1120px] px-6 sm:px-8 lg:flex lg:gap-16 lg:px-12">
+        <Sidebar />
+
+        <div className="w-full min-w-0 flex-1 space-y-2 pb-16 pt-20 lg:max-w-[640px] lg:py-24">
+          <Hero />
+          <TrustBar />
+          <About />
+          <Skills />
+          <LearningPath />
+          <Projects />
+          <Blog />
+          <Contact />
+          <Footer />
+        </div>
+      </div>
     </main>
   );
 }

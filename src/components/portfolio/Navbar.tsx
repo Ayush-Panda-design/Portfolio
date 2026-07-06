@@ -5,22 +5,42 @@ import { Logo } from "./Logo";
 import { MagneticButton } from "./MagneticButton";
 
 const NAV = [
-  { label: "ABOUT", href: "#about" },
-  { label: "SKILLS", href: "#skills" },
-  { label: "PROJECTS", href: "#projects" },
-  { label: "BLOG", href: "#blog" },
-  { label: "CONTACT", href: "#contact" },
+  { label: "About", href: "#about", id: "about" },
+  { label: "Skills", href: "#skills", id: "skills" },
+  { label: "Map", href: "#curriculum", id: "curriculum" },
+  { label: "Projects", href: "#projects", id: "projects" },
+  { label: "Blog", href: "#blog", id: "blog" },
+  { label: "Contact", href: "#contact", id: "contact" },
 ];
 
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
+  const [active, setActive] = useState("");
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 20);
+    const onScroll = () => setScrolled(window.scrollY > 16);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  useEffect(() => {
+    const sections = NAV.map((n) => document.getElementById(n.id)).filter(Boolean) as HTMLElement[];
+    if (!sections.length) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((e) => e.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+        if (visible[0]?.target?.id) setActive(visible[0].target.id);
+      },
+      { rootMargin: "-30% 0px -55% 0px", threshold: [0, 0.25, 0.5, 1] },
+    );
+
+    sections.forEach((s) => observer.observe(s));
+    return () => observer.disconnect();
   }, []);
 
   return (
@@ -28,55 +48,57 @@ export function Navbar() {
       initial={{ y: -80 }}
       animate={{ y: 0 }}
       transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-      className="fixed inset-x-0 top-0 z-50"
-      style={{
-        background: scrolled ? "rgba(250,248,245,0.85)" : "transparent",
-        backdropFilter: scrolled ? "blur(12px)" : "none",
-        borderBottom: scrolled ? "1px solid #e8e0d5" : "1px solid transparent",
-        transition: "background .3s, border-color .3s, backdrop-filter .3s",
-      }}
+      className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${
+        scrolled ? "glass border-b border-border-line/80" : "border-b border-transparent bg-transparent"
+      }`}
     >
-      <div className="mx-auto flex max-w-[1400px] items-center justify-between px-6 py-5 lg:px-12">
-        {/* Left: logo */}
-        <a href="#" className="flex items-center gap-3 text-[color:#1a1410]">
-          <Logo className="h-9 w-9 text-[color:#1a1410]" />
-          <span className="hidden font-mono text-[11px] tracking-[0.25em] text-[color:#1a1410] sm:inline">
+      <div className="mx-auto flex max-w-[1200px] items-center justify-between px-6 py-4 lg:px-8">
+        <a href="#" className="group flex items-center gap-3 text-ink">
+          <Logo className="h-9 w-9 text-accent transition-transform duration-300 group-hover:scale-105" />
+          <span className="hidden font-mono text-[11px] tracking-[0.22em] text-ink-soft sm:inline">
             AYUSH&nbsp;PANDA
           </span>
         </a>
 
-        {/* Center: nav */}
-        <nav className="hidden items-center gap-8 lg:flex">
-          {NAV.map((n) => (
-            <a
-              key={n.href}
-              href={n.href}
-              className="link-hover-draw font-sans text-[11px] font-medium tracking-[0.22em] text-[color:#1a1410] hover:text-[color:#c8430f]"
-            >
-              {n.label}
-            </a>
-          ))}
+        <nav className="hidden items-center gap-1 lg:flex">
+          {NAV.map((n) => {
+            const isActive = active === n.id;
+            return (
+              <a
+                key={n.href}
+                href={n.href}
+                className={`relative rounded-full px-4 py-2 font-sans text-[13px] font-medium transition-colors ${
+                  isActive ? "text-accent" : "text-ink-soft hover:text-ink"
+                }`}
+              >
+                {isActive && (
+                  <motion.span
+                    layoutId="nav-pill"
+                    className="absolute inset-0 rounded-full bg-accent/10"
+                    transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                  />
+                )}
+                <span className="relative">{n.label}</span>
+              </a>
+            );
+          })}
         </nav>
 
-        {/* Right: CTA */}
         <div className="flex items-center gap-3">
           <MagneticButton
             href="#contact"
-            className="hidden cursor-pointer items-center justify-center px-5 py-3 font-sans text-[11px] font-semibold tracking-[0.22em] text-[color:#faf8f5] transition-colors hover:brightness-110 md:inline-flex"
+            className="hidden cursor-pointer items-center justify-center rounded-full md:inline-flex"
           >
-            <span
-              className="block px-5 py-3 -mx-5 -my-3"
-              style={{ background: "#c8430f", color: "#faf8f5" }}
-            >
-              LET&apos;S WORK
+            <span className="block rounded-full bg-accent px-5 py-2.5 font-sans text-[12px] font-semibold tracking-[0.08em] text-primary-foreground transition-colors hover:bg-accent-hover">
+              Let&apos;s work
             </span>
           </MagneticButton>
           <button
             aria-label="Menu"
             onClick={() => setOpen((v) => !v)}
-            className="flex h-11 w-11 items-center justify-center text-[color:#1a1410] lg:hidden"
+            className="flex h-10 w-10 items-center justify-center rounded-full border border-border-line text-ink lg:hidden"
           >
-            {open ? <X size={22} /> : <Menu size={22} />}
+            {open ? <X size={18} /> : <Menu size={18} />}
           </button>
         </div>
       </div>
@@ -84,19 +106,18 @@ export function Navbar() {
       <AnimatePresence>
         {open && (
           <motion.div
-            initial={{ y: -20, opacity: 0 }}
+            initial={{ y: -12, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
-            exit={{ y: -20, opacity: 0 }}
-            className="lg:hidden"
-            style={{ background: "#faf8f5", borderTop: "1px solid #e8e0d5" }}
+            exit={{ y: -12, opacity: 0 }}
+            className="glass border-t border-border-line lg:hidden"
           >
-            <nav className="flex flex-col px-6 py-6">
+            <nav className="flex flex-col px-6 py-5">
               {NAV.map((n) => (
                 <a
                   key={n.href}
                   href={n.href}
                   onClick={() => setOpen(false)}
-                  className="border-b border-[color:#e8e0d5] py-4 font-sans text-[12px] tracking-[0.22em] text-[color:#1a1410]"
+                  className="border-b border-border-soft py-4 font-sans text-[14px] text-ink"
                 >
                   {n.label}
                 </a>
@@ -104,10 +125,9 @@ export function Navbar() {
               <a
                 href="#contact"
                 onClick={() => setOpen(false)}
-                className="mt-6 inline-flex items-center justify-center px-5 py-4 font-sans text-[12px] font-semibold tracking-[0.22em]"
-                style={{ background: "#c8430f", color: "#faf8f5" }}
+                className="mt-5 inline-flex items-center justify-center rounded-full bg-accent px-5 py-3.5 font-sans text-[13px] font-semibold text-primary-foreground"
               >
-                LET&apos;S WORK
+                Let&apos;s work
               </a>
             </nav>
           </motion.div>
