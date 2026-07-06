@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import {
   ArrowRightIcon as ArrowRight,
   BotIcon as Bot,
-  PlayIcon as Play,
+  ClapperboardIcon as Clapperboard,
   SendIcon as Send,
   SparklesIcon as Sparkles,
   UserIcon as User,
@@ -25,7 +25,7 @@ const ACCENT_GLOW: Record<string, string> = {
   pink: "from-pink-400/50 via-rose-400/20 to-fuchsia-500/30",
 };
 
-const CAPABILITIES = ["Source code", "README", "Architecture", "Deploy"];
+const CAPABILITIES = ["Source", "README", "Architecture", "Deploy"] as const;
 
 const CHAT_STORAGE_PREFIX = "portfolio-agent-chat-";
 
@@ -47,15 +47,6 @@ function loadStoredChat(projectId: string, intro: string): { messages: Msg[]; de
   } catch {
     return { messages: [{ role: "assistant", content: intro }], demoPlayed: false };
   }
-}
-
-function formatSync(date: string | null) {
-  if (!date) return "curated knowledge";
-  return new Date(date).toLocaleDateString("en-IN", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
 }
 
 function MessageBubble({
@@ -133,8 +124,8 @@ export function ProjectAgent({ project }: { project: ProductionProject }) {
   });
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
-  const [syncedAt, setSyncedAt] = useState<string | null>(null);
   const [filesUsed, setFilesUsed] = useState<number | null>(null);
+  const [contextTab, setContextTab] = useState<(typeof CAPABILITIES)[number]>("Source");
   const chatRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -171,14 +162,13 @@ export function ProjectAgent({ project }: { project: ProductionProject }) {
     setLoading(true);
 
     try {
-      const { reply, syncedAt: sync, filesUsed: files } = await askProjectAgent({
+      const { reply, filesUsed: files } = await askProjectAgent({
         data: {
           projectId: project.id,
           message: q,
           history: messages,
         },
       });
-      if (sync) setSyncedAt(sync);
       if (files != null) setFilesUsed(files);
       setMessages((m) => [...m, { role: "assistant", content: reply }]);
     } catch {
@@ -256,22 +246,37 @@ export function ProjectAgent({ project }: { project: ProductionProject }) {
                   <Github size={10} />
                   Ayush-Panda-design/{detail.repo}
                 </a>
-                <p className="mt-1.5 font-mono text-[9px] uppercase tracking-[0.12em] text-ink-faint">
-                  {filesUsed != null
-                    ? `Last scan · ${filesUsed} source file${filesUsed === 1 ? "" : "s"}`
-                    : `Synced · ${formatSync(syncedAt)}`}
+                <p className="mt-1.5 font-mono text-[9px] tracking-[0.06em] text-ink-faint">
+                  {filesUsed != null ? (
+                    <>
+                      <span className="text-ink-soft">Last scan · </span>
+                      <span className="text-accent">{filesUsed} files</span>
+                    </>
+                  ) : (
+                    <span>Reads live GitHub source on each question</span>
+                  )}
                 </p>
               </div>
             </div>
 
-            <div className="mt-3 flex flex-wrap gap-1.5">
+            <div className="mt-3 flex gap-1 border-b border-border-line/60 pb-0">
               {CAPABILITIES.map((cap) => (
-                <span
+                <button
                   key={cap}
-                  className="rounded-md border border-border-line/80 bg-bg/60 px-2 py-0.5 font-mono text-[8px] uppercase tracking-[0.1em] text-ink-soft"
+                  type="button"
+                  onClick={() => setContextTab(cap)}
+                  className={cn(
+                    "relative px-2.5 pb-2 font-mono text-[9px] uppercase tracking-[0.1em] transition-colors",
+                    contextTab === cap
+                      ? "text-accent"
+                      : "text-ink-faint hover:text-ink-soft",
+                  )}
                 >
                   {cap}
-                </span>
+                  {contextTab === cap && (
+                    <span className="absolute inset-x-1 bottom-0 h-0.5 rounded-full bg-accent" />
+                  )}
+                </button>
               ))}
             </div>
           </div>
@@ -294,15 +299,15 @@ export function ProjectAgent({ project }: { project: ProductionProject }) {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.97 }}
                     onClick={playDemo}
-                    className="group w-full rounded-2xl border border-dashed border-accent/35 bg-gradient-to-br from-accent/10 via-transparent to-violet-500/5 p-4 text-left transition-all hover:border-accent/55 hover:shadow-[0_0_32px_-8px_var(--color-accent-glow)]"
+                    className="group w-full rounded-2xl border border-violet-400/30 bg-gradient-to-br from-violet-500/12 via-violet-500/5 to-transparent p-4 text-left transition-all hover:border-violet-400/50 hover:from-violet-500/16"
                   >
                     <div className="flex items-center gap-2">
-                      <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-accent/15 text-accent transition-transform group-hover:scale-105">
-                        <Play size={14} className="ml-0.5" />
+                      <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-violet-500/15 text-violet-300 transition-transform group-hover:scale-105">
+                        <Clapperboard size={14} />
                       </span>
                       <div>
-                        <p className="font-mono text-[9px] uppercase tracking-[0.16em] text-accent">
-                          See it in action
+                        <p className="font-mono text-[9px] uppercase tracking-[0.16em] text-violet-300">
+                          Demo preview · sample answer
                         </p>
                         <p className="mt-0.5 text-[12px] font-medium text-ink">
                           &ldquo;{detail.agentDemo.question}&rdquo;
@@ -349,7 +354,7 @@ export function ProjectAgent({ project }: { project: ProductionProject }) {
           </div>
 
           {/* Input area */}
-          <div className="shrink-0 border-t border-border-line/80 bg-bg/90 px-4 py-4 shadow-[0_-12px_40px_-16px_rgba(0,0,0,0.5)]">
+          <div className="shrink-0 border-t-2 border-border-line/90 bg-bg/95 px-4 py-4 shadow-[0_-8px_32px_-8px_rgba(0,0,0,0.55)] backdrop-blur-sm">
             <p className="mb-2.5 font-mono text-[9px] uppercase tracking-[0.18em] text-ink-faint">
               Ask anything
             </p>
@@ -363,10 +368,10 @@ export function ProjectAgent({ project }: { project: ProductionProject }) {
                     onClick={() => send(q)}
                     disabled={loading || asked}
                     className={cn(
-                      "group flex w-full items-center justify-between gap-2 rounded-xl border px-3 py-2.5 text-left transition-all disabled:opacity-40",
+                      "group flex w-full cursor-pointer items-center justify-between gap-2 rounded-xl border px-3 py-3 text-left transition-all active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-40",
                       asked
                         ? "border-accent/25 bg-accent/5"
-                        : "border-border-line/80 bg-surface/40 hover:border-accent/40 hover:bg-accent/6",
+                        : "border-border-line/80 bg-surface/40 hover:border-accent/40 hover:bg-accent/8",
                     )}
                   >
                     <span

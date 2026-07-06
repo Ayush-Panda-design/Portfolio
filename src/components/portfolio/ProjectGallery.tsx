@@ -53,7 +53,7 @@ function Shot({
       type="button"
       onClick={() => onOpen?.(shot.src!)}
       className={cn(
-        "group relative w-full overflow-hidden rounded-xl border border-border-line/80 bg-bg/30 text-left ring-1 ring-transparent transition-all duration-300",
+        "group flex w-full flex-col overflow-hidden rounded-xl border border-border-line/80 bg-bg/30 text-left ring-1 ring-transparent transition-all duration-300",
         ring,
         featured ? "col-span-full" : "",
       )}
@@ -65,15 +65,12 @@ function Shot({
           loading="lazy"
           className="h-full w-full object-cover object-top transition-transform duration-500 group-hover:scale-[1.03]"
         />
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-bg/80 via-bg/10 to-transparent opacity-90" />
-        <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-2 p-3 sm:p-4">
-          <span className="rounded-full border border-white/10 bg-bg/70 px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.14em] text-ink backdrop-blur-md">
-            {shot.label}
-          </span>
-          <span className="flex h-7 w-7 items-center justify-center rounded-full border border-white/10 bg-bg/70 text-ink opacity-0 backdrop-blur-md transition-opacity group-hover:opacity-100">
-            <ZoomIn size={13} />
-          </span>
-        </div>
+        <span className="absolute right-3 top-3 flex h-7 w-7 items-center justify-center rounded-full border border-white/10 bg-bg/70 text-ink opacity-0 backdrop-blur-md transition-opacity group-hover:opacity-100">
+          <ZoomIn size={13} />
+        </span>
+      </div>
+      <div className="border-t border-border-line/70 bg-bg/50 px-3.5 py-2.5 sm:px-4 sm:py-3">
+        <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-ink-soft">{shot.label}</span>
       </div>
     </button>
   );

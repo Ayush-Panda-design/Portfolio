@@ -2,11 +2,14 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import {
   ArrowLeftIcon as ArrowLeft,
+  CircleAlertIcon as CircleAlert,
+  CircleCheckIcon as CircleCheck,
   ExternalLinkIcon as ExternalLink,
 } from "lucide-react";
 import { Github } from "./icons";
 import { ProjectAgent } from "./ProjectAgent";
 import { ProjectGallery } from "./ProjectGallery";
+import { ProjectValueFlow } from "./ProjectValueFlow";
 import { PROJECT_DETAILS } from "@/data/project-details";
 import type { ProductionProject } from "@/data/projects";
 import { cn } from "@/lib/utils";
@@ -83,23 +86,26 @@ export function ProjectDetailPage({ project }: { project: ProductionProject }) {
               <h1 className="mt-3 font-display text-4xl font-bold tracking-tight text-ink sm:text-5xl">
                 {project.title}
               </h1>
-              <p className="mt-4 max-w-2xl text-[16px] leading-relaxed text-ink-soft">{project.summary}</p>
-              <div className="mt-6 flex flex-wrap gap-2">
+              <ProjectValueFlow steps={detail.valueFlow} />
+              <p className="mt-4 max-w-2xl text-[17px] font-medium leading-relaxed text-ink-soft sm:text-[18px]">
+                {detail.heroSubtitle}
+              </p>
+              <div className="mt-6 flex flex-wrap items-center gap-3">
                 {project.live && (
                   <a
                     href={project.live}
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex items-center gap-1.5 rounded-full bg-accent px-4 py-2 text-[12px] font-semibold text-primary-foreground hover:bg-accent-hover"
+                    className="inline-flex items-center gap-2 rounded-full bg-accent px-5 py-2.5 text-[13px] font-semibold text-primary-foreground shadow-[0_0_28px_-4px_var(--color-accent-glow)] transition-all hover:bg-accent-hover hover:shadow-[0_0_36px_-2px_var(--color-accent-glow)]"
                   >
-                    <ExternalLink size={13} /> Live demo
+                    <ExternalLink size={14} /> Live demo
                   </a>
                 )}
                 <a
                   href={project.github}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center gap-1.5 rounded-full border border-border-line px-4 py-2 text-[12px] font-semibold text-ink hover:border-accent/40 hover:text-accent"
+                  className="inline-flex items-center gap-2 rounded-full border border-border-line/80 bg-transparent px-5 py-2.5 text-[13px] font-medium text-ink-soft transition-colors hover:border-accent/35 hover:bg-bg/40 hover:text-ink"
                 >
                   <Github size={14} /> Source
                 </a>
@@ -114,12 +120,22 @@ export function ProjectDetailPage({ project }: { project: ProductionProject }) {
               {...(ready ? { ...reveal, className: "mb-10 grid gap-6 sm:grid-cols-2" } : { className: "mb-10 grid gap-6 sm:grid-cols-2" })}
             >
               <div className="rounded-xl border border-border-line bg-surface/30 p-5">
-                <h2 className="font-mono text-[10px] uppercase tracking-[0.16em] text-accent">Problem</h2>
-                <p className="mt-3 text-[14px] leading-relaxed text-ink-soft">{detail.problem}</p>
+                <div className="flex items-center gap-2">
+                  <span className="flex h-7 w-7 items-center justify-center rounded-lg border border-amber-500/25 bg-amber-500/10 text-amber-300">
+                    <CircleAlert size={14} />
+                  </span>
+                  <h2 className="font-mono text-[10px] uppercase tracking-[0.16em] text-accent">Problem</h2>
+                </div>
+                <p className="mt-3 text-[14px] leading-[1.65] text-ink-soft">{detail.problem}</p>
               </div>
               <div className="rounded-xl border border-border-line bg-surface/30 p-5">
-                <h2 className="font-mono text-[10px] uppercase tracking-[0.16em] text-accent">Solution</h2>
-                <p className="mt-3 text-[14px] leading-relaxed text-ink-soft">{detail.solution}</p>
+                <div className="flex items-center gap-2">
+                  <span className="flex h-7 w-7 items-center justify-center rounded-lg border border-accent/25 bg-accent/10 text-accent">
+                    <CircleCheck size={14} />
+                  </span>
+                  <h2 className="font-mono text-[10px] uppercase tracking-[0.16em] text-accent">Solution</h2>
+                </div>
+                <p className="mt-3 text-[14px] leading-[1.65] text-ink-soft">{detail.solution}</p>
               </div>
             </MSection>
 
@@ -137,10 +153,10 @@ export function ProjectDetailPage({ project }: { project: ProductionProject }) {
                           whileHover: { y: -3 },
                         }
                       : {})}
-                    className="rounded-xl border border-border-line bg-bg/40 p-4 transition-shadow hover:shadow-[0_16px_40px_-28px_var(--color-accent-glow)]"
+                    className="rounded-xl border border-border-line bg-bg/40 p-5 transition-shadow hover:shadow-[0_16px_40px_-28px_var(--color-accent-glow)]"
                   >
                     <h3 className="font-display text-sm font-bold text-ink">{h.title}</h3>
-                    <p className="mt-2 text-[13px] leading-relaxed text-ink-soft">{h.body}</p>
+                    <p className="mt-2.5 text-[13px] leading-[1.7] text-ink-soft">{h.body}</p>
                   </M>
                 ))}
               </div>

@@ -1,4 +1,6 @@
 export type ProjectDetail = {
+  heroSubtitle: string;
+  valueFlow: string[];
   problem: string;
   solution: string;
   highlights: { title: string; body: string }[];
@@ -15,6 +17,9 @@ export const PROJECT_DETAILS: Record<string, ProjectDetail> = {
   edinform: {
     repo: "EdinForm11",
     agentName: "EdinForm Guide",
+    heroSubtitle:
+      "Typeform-quality forms on your own domain — build, publish, and analyze without enterprise pricing.",
+    valueFlow: ["Create", "Publish", "Share", "Analyze"],
     agentIntro:
       "I scan live source files from GitHub — routes, schemas, services — not just the README. Ask about implementation, APIs, or deployment.",
     agentDemo: {
@@ -46,9 +51,9 @@ Key capabilities enforced server-side:
       "Where is the backend hosted?",
     ],
     problem:
-      "Teams need Typeform-quality multi-step forms with analytics, limits, and exports — without paying enterprise prices or losing control of their data model.",
+      "Teams want Typeform-quality forms with analytics and limits — without enterprise pricing or losing data control.",
     solution:
-      "EdinForm is a production SaaS on a Turborepo monorepo: Next.js frontend on Vercel, Express + tRPC API on Render, PostgreSQL via Drizzle, Redis rate limits, and a custom domain at edinform.in.",
+      "Production SaaS monorepo: Next.js on Vercel, tRPC API on Render, PostgreSQL + Redis — live at edinform.in.",
     highlights: [
       {
         title: "End-to-end creator flow",
@@ -83,6 +88,9 @@ Key capabilities enforced server-side:
   shipflow: {
     repo: "ShipFlowAI",
     agentName: "ShipFlow Analyst",
+    heroSubtitle:
+      "One delivery thread for teams — from customer request to human-approved release.",
+    valueFlow: ["Idea", "Requirements", "Tasks", "AI review", "Ship"],
     agentIntro:
       "I scan live source files from GitHub — Inngest jobs, PR review logic, auth — not just the README. Ask about how features are implemented.",
     agentDemo: {
@@ -105,9 +113,9 @@ Background work runs on **Inngest** (PR reviews, crons, codegen) while clarify/r
       "How does GitHub integration work?",
     ],
     problem:
-      "Features get lost between customer requests, planning docs, GitHub PRs, and release — teams lack one thread from idea to shipped code.",
+      "Features scatter across tickets, docs, and PRs — no single thread from idea to shipped code.",
     solution:
-      "ShipFlow AI unifies clarify → requirements → tasks → plan approval → development → AI PR review → human release approval on shipflowai.in.",
+      "ShipFlow unifies clarify → requirements → tasks → AI PR review → human release gates on shipflowai.in.",
     highlights: [
       {
         title: "Single delivery thread",
@@ -141,6 +149,9 @@ Background work runs on **Inngest** (PR reviews, crons, codegen) while clarify/r
   relvion: {
     repo: "Relvion-AI",
     agentName: "Relvion Expert",
+    heroSubtitle:
+      "Superhuman-style Gmail & Calendar — AI triage, search, and an agent that acts for you.",
+    valueFlow: ["Inbox", "Search", "Triage", "Agent"],
     agentIntro:
       "I scan live source files from GitHub — search, webhooks, MCP handlers — not just the README. Ask about real implementation details.",
     agentDemo: {
@@ -169,9 +180,9 @@ OAuth-only — mail stays in Google; Relvion is the workspace layer, not a migra
       "How is realtime sync implemented?",
     ],
     problem:
-      "Gmail and Calendar are powerful but fragmented — slow search, no unified AI layer, and constant tab-switching kill momentum.",
+      "Gmail and Calendar live in separate tabs — slow search, no unified AI inside the workflow.",
     solution:
-      "Relvion rebuilds the inbox + calendar workflow with live Gmail/Calendar via Corsair, Gemini triage, pgvector search, and an MCP agent sidebar.",
+      "Live Google data via Corsair, pgvector search, Gemini triage, and an MCP agent sidebar.",
     highlights: [
       {
         title: "Live Google data",
@@ -205,6 +216,9 @@ OAuth-only — mail stays in Google; Relvion is the workspace layer, not a migra
   votora: {
     repo: "Votora-Real-Time-Polling-Platform",
     agentName: "Votora Host",
+    heroSubtitle:
+      "Synchronized polls and quizzes for live events — realtime rooms, timers, and dashboards.",
+    valueFlow: ["Create", "Lobby", "Live sync", "Results"],
     agentIntro:
       "I scan live source files from GitHub — Socket.io rooms, controllers, auth middleware — not just the README.",
     agentDemo: {
@@ -234,9 +248,9 @@ Deploy split:
       "How is auth handled cross-origin?",
     ],
     problem:
-      "Live events need synchronized polls and quizzes with honest participation tracking — generic forms can't handle realtime rooms, timers, and anti-cheat.",
+      "Live events need synced polls and quizzes — generic forms can't handle rooms, timers, or integrity checks.",
     solution:
-      "Votora delivers MCQ polls and scored quizzes with Socket.io rooms, lobby timers, live Recharts dashboards, and optional quiz integrity checks.",
+      "Socket.io rooms, lobby timers, live Recharts dashboards, and optional quiz anti-cheat — split Vercel + Render deploy.",
     highlights: [
       {
         title: "Realtime by default",
