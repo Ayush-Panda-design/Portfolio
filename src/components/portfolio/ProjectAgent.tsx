@@ -34,6 +34,7 @@ function renderMarkdownLite(text: string) {
 
 export function ProjectAgent({ project }: { project: ProductionProject }) {
   const detail = PROJECT_DETAILS[project.id];
+  if (!detail) return null;
   const [messages, setMessages] = useState<Msg[]>([
     {
       role: "assistant",
@@ -82,8 +83,7 @@ export function ProjectAgent({ project }: { project: ProductionProject }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
+      animate={{ opacity: 1, y: 0 }}
       className="sticky top-24 overflow-hidden rounded-2xl border border-border-line bg-surface/50 backdrop-blur-md"
     >
       <div className="border-b border-border-line/80 bg-bg/40 px-4 py-3">
