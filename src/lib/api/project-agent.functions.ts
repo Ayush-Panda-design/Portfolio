@@ -11,15 +11,8 @@ const chatSchema = z.object({
 });
 
 export const askProjectAgent = createServerFn({ method: "POST" })
-  .validator(chatSchema)
+  .inputValidator(chatSchema)
   .handler(async ({ data }) => {
     const { runProjectAgent } = await import("./project-agent.server");
     return runProjectAgent(data);
-  });
-
-export const getProjectSyncStatus = createServerFn({ method: "GET" })
-  .validator(z.object({ projectId: z.string() }))
-  .handler(async ({ data }) => {
-    const { getProjectSync } = await import("./project-agent.server");
-    return getProjectSync(data);
   });
