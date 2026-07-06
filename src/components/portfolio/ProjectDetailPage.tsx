@@ -45,7 +45,7 @@ export function ProjectDetailPage({ project }: { project: ProductionProject }) {
   const MSection = ready ? motion.section : "section";
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-bg text-ink">
+    <main className="relative min-h-screen overflow-x-clip bg-bg text-ink">
       {ready && (
         <div className="pointer-events-none absolute inset-0">
           <motion.div
@@ -190,9 +190,10 @@ export function ProjectDetailPage({ project }: { project: ProductionProject }) {
             </MSection>
           </div>
 
-          <aside className="mt-10 lg:mt-0 lg:sticky lg:top-8 lg:self-start">
+          <aside className="mt-10 lg:sticky lg:top-6 lg:z-10 lg:mt-0 lg:self-start">
             {ready ? (
               <motion.div
+                className="lg:max-h-[calc(100vh-3rem)]"
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.15, duration: 0.45 }}
@@ -200,7 +201,9 @@ export function ProjectDetailPage({ project }: { project: ProductionProject }) {
                 <ProjectAgent project={project} />
               </motion.div>
             ) : (
-              <ProjectAgent project={project} />
+              <div className="lg:max-h-[calc(100vh-3rem)]">
+                <ProjectAgent project={project} />
+              </div>
             )}
           </aside>
         </div>

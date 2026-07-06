@@ -195,7 +195,7 @@ export function ProjectAgent({ project }: { project: ProductionProject }) {
   };
 
   return (
-    <div className="relative">
+    <div className="relative h-full">
       {/* Ambient glow behind panel */}
       <div
         className={cn(
@@ -210,11 +210,11 @@ export function ProjectAgent({ project }: { project: ProductionProject }) {
         initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="agent-border-glow relative rounded-[20px] p-[1px] shadow-[0_32px_80px_-24px_rgba(0,0,0,0.65)]"
+        className="agent-border-glow relative flex h-full max-h-[calc(100vh-3rem)] flex-col rounded-[20px] p-[1px] shadow-[0_32px_80px_-24px_rgba(0,0,0,0.65)]"
       >
-        <div className="flex flex-col overflow-hidden rounded-[19px] bg-bg-elevated">
+        <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-[19px] bg-bg-elevated">
           {/* Top feature strip */}
-          <div className="relative overflow-hidden border-b border-border-line/80 bg-bg/80 px-4 py-2.5">
+          <div className="relative shrink-0 overflow-hidden border-b border-border-line/80 bg-bg/80 px-4 py-2.5">
             <div className="agent-panel-mesh pointer-events-none absolute inset-0 opacity-60" />
             <div className="relative flex items-center justify-between gap-2">
               <div className="flex items-center gap-1.5">
@@ -233,7 +233,7 @@ export function ProjectAgent({ project }: { project: ProductionProject }) {
           </div>
 
           {/* Header */}
-          <div className="border-b border-border-line/60 px-4 py-4">
+          <div className="shrink-0 border-b border-border-line/60 px-4 py-4">
             <div className="flex items-start gap-3">
               <div className="relative">
                 <span className="flex h-11 w-11 items-center justify-center rounded-2xl border border-accent/30 bg-gradient-to-br from-accent/20 to-accent/5 text-accent shadow-[0_0_24px_-4px_var(--color-accent-glow)]">
@@ -277,10 +277,10 @@ export function ProjectAgent({ project }: { project: ProductionProject }) {
           </div>
 
           {/* Chat */}
-          <div className="agent-panel-mesh relative">
+          <div className="agent-panel-mesh relative min-h-0 flex-1">
             <div
               ref={chatRef}
-              className="agent-scroll agent-chat-fade flex max-h-[min(480px,58vh)] flex-col gap-4 overflow-y-auto px-4 py-4"
+              className="agent-scroll agent-chat-fade flex h-full max-h-[min(360px,50vh)] flex-col gap-4 overflow-y-auto px-4 py-4 lg:max-h-none"
             >
               {messages.map((m, i) => (
                 <MessageBubble key={`${m.role}-${i}`} message={m} agentName={detail.agentName} index={i} />
@@ -349,7 +349,7 @@ export function ProjectAgent({ project }: { project: ProductionProject }) {
           </div>
 
           {/* Input area */}
-          <div className="border-t border-border-line/80 bg-bg/90 px-4 py-4 shadow-[0_-12px_40px_-16px_rgba(0,0,0,0.5)]">
+          <div className="shrink-0 border-t border-border-line/80 bg-bg/90 px-4 py-4 shadow-[0_-12px_40px_-16px_rgba(0,0,0,0.5)]">
             <p className="mb-2.5 font-mono text-[9px] uppercase tracking-[0.18em] text-ink-faint">
               Ask anything
             </p>
