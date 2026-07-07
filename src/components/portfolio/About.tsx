@@ -66,7 +66,7 @@ export function About() {
 
   return (
     <section id="about" className="scroll-mt-24 border-t border-border-line pt-14 lg:pt-16">
-      <SectionLabel num="02.">About</SectionLabel>
+      <SectionLabel num="03.">About</SectionLabel>
       <h2 className="font-display text-2xl font-bold leading-snug tracking-tight text-ink sm:text-3xl">
         <TextGenerate words="Building real software, not just side projects." />
       </h2>

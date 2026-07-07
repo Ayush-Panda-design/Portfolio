@@ -138,6 +138,12 @@ export function Hero() {
         >
           Practice trail
         </a>
+        <a
+          href="#resume"
+          className="inline-flex items-center rounded-full border border-border-line px-5 py-2.5 text-[13px] font-semibold text-ink transition-colors hover:border-accent/40 hover:text-accent"
+        >
+          Download resume
+        </a>
       </motion.div>
 
       <motion.div

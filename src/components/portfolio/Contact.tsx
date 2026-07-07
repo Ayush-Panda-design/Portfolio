@@ -30,7 +30,7 @@ export function Contact() {
 
   return (
     <section id="contact" className="scroll-mt-24 border-t border-border-line pt-14 lg:pt-16">
-      <SectionLabel num="06.">Contact</SectionLabel>
+      <SectionLabel num="07.">Contact</SectionLabel>
       <h2 className="font-display text-2xl font-bold leading-snug tracking-tight text-ink sm:text-3xl">
         <TextGenerate words="Let's build something together." />
       </h2>

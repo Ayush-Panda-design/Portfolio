@@ -14,7 +14,7 @@ const GROUPS = [
 export function Skills() {
   return (
     <section id="skills" className="scroll-mt-24 border-t border-border-line pt-14 lg:pt-16">
-      <SectionLabel num="03.">Stack</SectionLabel>
+      <SectionLabel num="04.">Stack</SectionLabel>
       <h2 className="font-display text-2xl font-bold leading-snug tracking-tight text-ink sm:text-3xl">
         <TextGenerate words="Tools I ship with." />
       </h2>

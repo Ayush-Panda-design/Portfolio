@@ -36,3 +36,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Local resume generator (scripts, assets, local PDF copies)
+resume/

@@ -7,6 +7,7 @@ import { Skills } from "@/components/portfolio/Skills";
 import { LearningPath } from "@/components/portfolio/LearningPath";
 import { Projects } from "@/components/portfolio/Projects";
 import { Blog } from "@/components/portfolio/Blog";
+import { Resume } from "@/components/portfolio/Resume";
 import { Contact } from "@/components/portfolio/Contact";
 import { Footer } from "@/components/portfolio/Footer";
 import { Cursor } from "@/components/portfolio/Cursor";
@@ -40,10 +41,11 @@ function Index() {
           <Hero />
           <TrustBar />
           <Projects />
+          <Resume />
           <About />
           <Skills />
-          <LearningPath />
           <Blog />
+          <LearningPath />
           <Contact />
           <Footer />
         </div>

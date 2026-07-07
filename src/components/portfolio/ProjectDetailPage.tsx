@@ -48,23 +48,18 @@ export function ProjectDetailPage({ project }: { project: ProductionProject }) {
   const MSection = ready ? motion.section : "section";
 
   return (
-    <main className="relative min-h-screen overflow-x-clip bg-bg text-ink">
+    <main className="relative min-h-screen overflow-x-clip bg-bg text-ink lg:flex">
       {ready && (
-        <div className="pointer-events-none absolute inset-0">
+        <div className="pointer-events-none absolute inset-0 lg:right-[min(44vw,520px)]">
           <motion.div
             className={cn("absolute -left-32 top-20 h-72 w-72 rounded-full bg-gradient-to-br blur-3xl", gradient)}
             animate={{ scale: [1, 1.08, 1], opacity: [0.35, 0.55, 0.35] }}
             transition={{ duration: 8, repeat: Infinity }}
           />
-          <motion.div
-            className="absolute -right-24 bottom-32 h-64 w-64 rounded-full bg-accent/5 blur-3xl"
-            animate={{ y: [0, -20, 0] }}
-            transition={{ duration: 10, repeat: Infinity }}
-          />
         </div>
       )}
 
-      <div className="relative mx-auto max-w-6xl px-6 py-10 sm:px-8 lg:py-14">
+      <div className="relative min-w-0 flex-1 px-6 py-10 sm:px-8 lg:mr-[min(44vw,520px)] lg:py-14 lg:pr-10">
         <M {...(ready ? reveal : {})}>
           <a
             href="/#projects"
@@ -74,8 +69,7 @@ export function ProjectDetailPage({ project }: { project: ProductionProject }) {
           </a>
         </M>
 
-        <div className="mt-8 lg:grid lg:grid-cols-[1fr_400px] lg:gap-10 xl:grid-cols-[1fr_440px]">
-          <div className="min-w-0">
+        <div className="mt-8 max-w-3xl">
             <MSection {...(ready ? { ...reveal, className: "mb-10" } : { className: "mb-10" })}>
               <div className="flex flex-wrap items-center gap-2">
                 <span className="font-mono text-[11px] text-ink-faint">{project.num}</span>
@@ -204,26 +198,14 @@ export function ProjectDetailPage({ project }: { project: ProductionProject }) {
                 ))}
               </div>
             </MSection>
-          </div>
-
-          <aside className="mt-10 lg:sticky lg:top-6 lg:z-10 lg:mt-0 lg:self-start">
-            {ready ? (
-              <motion.div
-                className="lg:max-h-[calc(100vh-3rem)]"
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.15, duration: 0.45 }}
-              >
-                <ProjectAgent project={project} />
-              </motion.div>
-            ) : (
-              <div className="lg:max-h-[calc(100vh-3rem)]">
-                <ProjectAgent project={project} />
-              </div>
-            )}
-          </aside>
         </div>
       </div>
+
+      <aside className="relative mt-10 border-t border-border-line lg:fixed lg:inset-y-0 lg:right-0 lg:z-30 lg:mt-0 lg:flex lg:w-[min(44vw,520px)] lg:flex-col lg:border-t-0 lg:border-l">
+        <div className="h-full min-h-[70vh] lg:h-screen">
+          <ProjectAgent project={project} variant="workspace" />
+        </div>
+      </aside>
     </main>
   );
 }
