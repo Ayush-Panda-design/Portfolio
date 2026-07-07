@@ -4,11 +4,12 @@ import { Github, Linkedin, Twitter, Hashnode } from "./icons";
 
 const NAV = [
   { num: "01", label: "Shipped", href: "#projects", id: "projects" },
-  { num: "02", label: "About", href: "#about", id: "about" },
-  { num: "03", label: "Stack", href: "#skills", id: "skills" },
-  { num: "04", label: "Practice", href: "#learning", id: "learning" },
+  { num: "02", label: "Resume", href: "#resume", id: "resume" },
+  { num: "03", label: "About", href: "#about", id: "about" },
+  { num: "04", label: "Stack", href: "#skills", id: "skills" },
   { num: "05", label: "Writing", href: "#blog", id: "blog" },
-  { num: "06", label: "Contact", href: "#contact", id: "contact" },
+  { num: "06", label: "Practice", href: "#learning", id: "learning" },
+  { num: "07", label: "Contact", href: "#contact", id: "contact" },
 ];
 
 const SOCIALS = [

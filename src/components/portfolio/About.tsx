@@ -29,8 +29,8 @@ function Counter({ value, decimals = 0, suffix = "" }: { value: number; decimals
 const CARDS = [
   {
     kind: "text",
-    title: "4th Semester",
-    body: "Currently in my 4th semester of B.Tech Computer Science & Engineering at VSSUT, Burla — focused on systems, databases and modern web.",
+    title: "5th Semester",
+    body: "Currently in my 5th semester of B.Tech Computer Science & Engineering at VSSUT, Burla — focused on systems, databases and modern web.",
     value: 0,
     decimals: 0,
     suffix: "",
@@ -66,7 +66,7 @@ export function About() {
 
   return (
     <section id="about" className="scroll-mt-24 border-t border-border-line pt-14 lg:pt-16">
-      <SectionLabel num="02.">About</SectionLabel>
+      <SectionLabel num="03.">About</SectionLabel>
       <h2 className="font-display text-2xl font-bold leading-snug tracking-tight text-ink sm:text-3xl">
         <TextGenerate words="Building real software, not just side projects." />
       </h2>
@@ -81,7 +81,7 @@ export function About() {
             >
               <p>
                 I&apos;m a Computer Science undergrad at <span className="text-ink">VSSUT, Burla</span>, currently
-                in my 4th semester. My focus is full-stack web development with a strong bias toward type-safety,
+                in my 5th semester. My focus is full-stack web development with a strong bias toward type-safety,
                 sensible architecture and shipping things that actually run in production.
               </p>
               <p>

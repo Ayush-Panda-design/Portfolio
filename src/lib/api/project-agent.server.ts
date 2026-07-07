@@ -10,10 +10,13 @@ import {
 
 type ChatMsg = { role: "user" | "assistant"; content: string };
 
+type AttachmentInput = { name: string; mimeType: string; data: string };
+
 type ChatInput = {
   projectId: string;
   message: string;
   history?: ChatMsg[];
+  attachments?: AttachmentInput[];
 };
 
 function queryTerms(query: string): string[] {
@@ -113,14 +116,30 @@ async function callLlm(
   system: string,
   user: string,
   history: ChatMsg[],
+  attachments: AttachmentInput[] = [],
 ): Promise<string | null> {
-  const messages = [
-    ...history.map((m) => ({ role: m.role, content: m.content })),
-    { role: "user" as const, content: user },
-  ];
+  const historyMessages = history.map((m) => ({ role: m.role, content: m.content }));
+
+  const imageParts = attachments.filter((a) => a.mimeType.startsWith("image/"));
+  const otherParts = attachments.filter((a) => !a.mimeType.startsWith("image/"));
+  const attachmentNote =
+    otherParts.length > 0
+      ? `\n\n[Attachments: ${otherParts.map((a) => `${a.name} (${a.mimeType})`).join(", ")}]`
+      : "";
 
   const openRouterKey = process.env.OPENROUTER_API_KEY;
   if (openRouterKey) {
+    const userContent =
+      imageParts.length > 0
+        ? [
+            { type: "text", text: user + attachmentNote },
+            ...imageParts.map((a) => ({
+              type: "image_url",
+              image_url: { url: `data:${a.mimeType};base64,${a.data}` },
+            })),
+          ]
+        : user + attachmentNote;
+
     const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -131,7 +150,11 @@ async function callLlm(
       },
       body: JSON.stringify({
         model: process.env.OPENROUTER_MODEL ?? "google/gemini-2.0-flash-001",
-        messages: [{ role: "system", content: system }, ...messages],
+        messages: [
+          { role: "system", content: system },
+          ...historyMessages,
+          { role: "user", content: userContent },
+        ],
         max_tokens: 1100,
         temperature: 0.4,
       }),
@@ -145,6 +168,13 @@ async function callLlm(
 
   const geminiKey = process.env.GEMINI_API_KEY;
   if (geminiKey) {
+    const parts: { text?: string; inline_data?: { mime_type: string; data: string } }[] = [
+      { text: user + attachmentNote },
+      ...imageParts.map((a) => ({
+        inline_data: { mime_type: a.mimeType, data: a.data },
+      })),
+    ];
+
     const res = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiKey}`,
       {
@@ -152,10 +182,13 @@ async function callLlm(
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           systemInstruction: { parts: [{ text: system }] },
-          contents: messages.map((m) => ({
-            role: m.role === "assistant" ? "model" : "user",
-            parts: [{ text: m.content }],
-          })),
+          contents: [
+            ...historyMessages.map((m) => ({
+              role: m.role === "assistant" ? "model" : "user",
+              parts: [{ text: m.content }],
+            })),
+            { role: "user", parts },
+          ],
           generationConfig: { maxOutputTokens: 1100, temperature: 0.4 },
         }),
       },
@@ -262,17 +295,19 @@ ${readmeCtx || "(unavailable)"}
 ## LIVE SOURCE CODE (${detail.repo})
 ${codeBlock}`;
 
-  const llmReply = await callLlm(system, data.message, chatHistory);
+  const llmReply = await callLlm(system, data.message, chatHistory, data.attachments ?? []);
   const reply =
     llmReply ??
-    fallbackAnswer(
-      project.title,
-      data.message,
-      knowledge,
-      snapshot?.readme ?? "",
-      codeCtx,
-      project.github,
-    );
+    (data.attachments?.length
+      ? `I received your attachment(s) but need an API key for vision analysis. For now, ask a text question about **${project.title}** or browse ${project.github}.`
+      : fallbackAnswer(
+          project.title,
+          data.message,
+          knowledge,
+          snapshot?.readme ?? "",
+          codeCtx,
+          project.github,
+        ));
 
   return { reply, syncedAt, filesUsed };
 }
