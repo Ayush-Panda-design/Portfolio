@@ -39,10 +39,10 @@ function Index() {
         <div className="w-full min-w-0 flex-1 space-y-2 pb-16 pt-20 lg:max-w-[640px] lg:py-24">
           <Hero />
           <TrustBar />
+          <Projects />
           <About />
           <Skills />
           <LearningPath />
-          <Projects />
           <Blog />
           <Contact />
           <Footer />

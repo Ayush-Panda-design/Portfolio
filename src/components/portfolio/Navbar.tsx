@@ -5,10 +5,10 @@ import { Logo } from "./Logo";
 import { MagneticButton } from "./MagneticButton";
 
 const NAV = [
+  { label: "Projects", href: "#projects", id: "projects" },
   { label: "About", href: "#about", id: "about" },
   { label: "Skills", href: "#skills", id: "skills" },
   { label: "Map", href: "#curriculum", id: "curriculum" },
-  { label: "Projects", href: "#projects", id: "projects" },
   { label: "Blog", href: "#blog", id: "blog" },
   { label: "Contact", href: "#contact", id: "contact" },
 ];

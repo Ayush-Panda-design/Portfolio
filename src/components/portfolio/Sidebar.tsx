@@ -3,10 +3,10 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Github, Linkedin, Twitter, Hashnode } from "./icons";
 
 const NAV = [
-  { num: "01", label: "About", href: "#about", id: "about" },
-  { num: "02", label: "Stack", href: "#skills", id: "skills" },
-  { num: "03", label: "Practice", href: "#learning", id: "learning" },
-  { num: "04", label: "Shipped", href: "#projects", id: "projects" },
+  { num: "01", label: "Shipped", href: "#projects", id: "projects" },
+  { num: "02", label: "About", href: "#about", id: "about" },
+  { num: "03", label: "Stack", href: "#skills", id: "skills" },
+  { num: "04", label: "Practice", href: "#learning", id: "learning" },
   { num: "05", label: "Writing", href: "#blog", id: "blog" },
   { num: "06", label: "Contact", href: "#contact", id: "contact" },
 ];
@@ -21,7 +21,7 @@ const SOCIALS = [
 const AVATAR = "https://i.ibb.co/sYzb6rs/Gemini-Generated-Image-b7cnr4b7cnr4b7cn.png";
 
 function useActiveSection() {
-  const [active, setActive] = useState("about");
+  const [active, setActive] = useState("projects");
 
   useEffect(() => {
     const sections = NAV.map((n) => document.getElementById(n.id)).filter(Boolean) as HTMLElement[];

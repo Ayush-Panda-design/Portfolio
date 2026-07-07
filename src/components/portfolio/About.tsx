@@ -65,8 +65,8 @@ export function About() {
   const [open, setOpen] = useState<number | null>(null);
 
   return (
-    <section id="about" className="scroll-mt-24 py-14 lg:py-16">
-      <SectionLabel num="01.">About</SectionLabel>
+    <section id="about" className="scroll-mt-24 border-t border-border-line pt-14 lg:pt-16">
+      <SectionLabel num="02.">About</SectionLabel>
       <h2 className="font-display text-2xl font-bold leading-snug tracking-tight text-ink sm:text-3xl">
         <TextGenerate words="Building real software, not just side projects." />
       </h2>
