@@ -116,7 +116,7 @@ export function Hero() {
         transition={{ delay: 0.55 }}
         className="mt-5 text-[15px] leading-[1.8] text-ink-soft"
       >
-        CS undergrad at VSSUT (4th semester, CGPA 8.27). Focused on type-safe APIs, careful UI, and shipping
+        CS undergrad at VSSUT (5th semester, CGPA 8.27). Focused on type-safe APIs, careful UI, and shipping
         software that actually runs in production.
       </motion.p>
 
@@ -155,7 +155,7 @@ export function Hero() {
         {[
           { n: "20+", l: "Projects" },
           { n: "8.27", l: "CGPA" },
-          { n: "4th", l: "Semester" },
+          { n: "5th", l: "Semester" },
         ].map((s) => (
           <div key={s.l}>
             <div className="font-display text-2xl font-bold text-ink">{s.n}</div>
