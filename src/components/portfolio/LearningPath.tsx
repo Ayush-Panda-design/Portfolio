@@ -24,7 +24,7 @@ export function LearningPath() {
           Built while learning
         </span>
       </div>
-      <SectionLabel num="03.">Practice trail</SectionLabel>
+      <SectionLabel num="04.">Practice trail</SectionLabel>
       <h2 className="font-display text-2xl font-bold leading-snug tracking-tight text-ink sm:text-3xl">
         <TextGenerate words="Concepts first — then a project for each." />
       </h2>

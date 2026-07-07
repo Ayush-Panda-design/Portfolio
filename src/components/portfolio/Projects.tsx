@@ -50,7 +50,7 @@ export function Projects() {
           Production grade
         </span>
       </div>
-      <SectionLabel num="04.">Shipped products</SectionLabel>
+      <SectionLabel num="01.">Shipped products</SectionLabel>
       <h2 className="font-display text-2xl font-bold leading-snug tracking-tight text-ink sm:text-3xl">
         <TextGenerate words="Real systems, unique features, live users." />
       </h2>
