@@ -14,6 +14,7 @@ export type ProductionProject = {
   features: string[];
   stack: string[];
   screenshots: ProjectScreenshot[];
+  demoVideoSrc?: string;
   live?: string;
   github: string;
   accent: string;
@@ -37,43 +38,8 @@ export type LearningTopic = {
 
 export const PRODUCTION: ProductionProject[] = [
   {
-    id: "edinform",
-    num: "01",
-    title: "EdinForm",
-    tag: "SaaS · Live",
-    summary:
-      "Typeform-style form builder monorepo — create, publish, and analyze forms end-to-end on a real domain.",
-    features: [
-      "Conditional logic & multi-step Typeform UI",
-      "QR sharing, CSV export, Recharts analytics",
-      "Response limits, expiry, Upstash rate limits",
-      "tRPC + Drizzle + Turborepo production architecture",
-    ],
-    stack: ["Next.js", "Express", "tRPC", "Drizzle", "PostgreSQL", "Redis", "Turborepo"],
-    screenshots: [
-      {
-        src: "/projects/edinform-landing.png",
-        label: "Landing page",
-        alt: "EdinForm marketing landing page with form builder preview",
-      },
-      {
-        src: "/projects/edinform-analytics.png",
-        label: "Analytics dashboard",
-        alt: "EdinForm workspace analytics with charts and metrics",
-      },
-      {
-        src: "/projects/edinform-templates.png",
-        label: "Template library",
-        alt: "EdinForm template gallery with categorized form starters",
-      },
-    ],
-    live: "https://edinform.in",
-    github: "https://github.com/Ayush-Panda-design/EdinForm11",
-    accent: "teal",
-  },
-  {
     id: "shipflow",
-    num: "02",
+    num: "01",
     title: "ShipFlow AI",
     tag: "AI · Live",
     summary:
@@ -103,12 +69,13 @@ export const PRODUCTION: ProductionProject[] = [
       },
     ],
     live: "https://shipflowai.in",
+    demoVideoSrc: "/videos/shipflow-demo.mp4",
     github: "https://github.com/Ayush-Panda-design/ShipFlowAI",
     accent: "violet",
   },
   {
     id: "relvion",
-    num: "03",
+    num: "02",
     title: "Relvion AI",
     tag: "AI · Live",
     summary:
@@ -138,8 +105,45 @@ export const PRODUCTION: ProductionProject[] = [
       },
     ],
     live: "https://relvion-ai.vercel.app/",
+    demoVideoSrc: "/videos/relvion-demo.mp4",
     github: "https://github.com/Ayush-Panda-design/Relvion-AI",
     accent: "amber",
+  },
+  {
+    id: "edinform",
+    num: "03",
+    title: "EdinForm",
+    tag: "SaaS · Live",
+    summary:
+      "Typeform-style form builder monorepo — create, publish, and analyze forms end-to-end on a real domain.",
+    features: [
+      "Conditional logic & multi-step Typeform UI",
+      "QR sharing, CSV export, Recharts analytics",
+      "Response limits, expiry, Upstash rate limits",
+      "tRPC + Drizzle + Turborepo production architecture",
+    ],
+    stack: ["Next.js", "Express", "tRPC", "Drizzle", "PostgreSQL", "Redis", "Turborepo"],
+    screenshots: [
+      {
+        src: "/projects/edinform-landing.png",
+        label: "Landing page",
+        alt: "EdinForm marketing landing page with form builder preview",
+      },
+      {
+        src: "/projects/edinform-analytics.png",
+        label: "Analytics dashboard",
+        alt: "EdinForm workspace analytics with charts and metrics",
+      },
+      {
+        src: "/projects/edinform-templates.png",
+        label: "Template library",
+        alt: "EdinForm template gallery with categorized form starters",
+      },
+    ],
+    live: "https://edinform.in",
+    demoVideoSrc: "/videos/edinform-demo.mp4",
+    github: "https://github.com/Ayush-Panda-design/EdinForm11",
+    accent: "teal",
   },
   {
     id: "votora",
@@ -173,6 +177,7 @@ export const PRODUCTION: ProductionProject[] = [
       },
     ],
     live: "https://votora-client-jaam.vercel.app",
+    demoVideoSrc: "/videos/votora-demo.mp4",
     github: "https://github.com/Ayush-Panda-design/Votora-Real-Time-Polling-Platform",
     accent: "pink",
   },

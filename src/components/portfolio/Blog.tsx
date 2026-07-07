@@ -37,6 +37,18 @@ export function Blog() {
       <h2 className="font-display text-2xl font-bold leading-snug tracking-tight text-ink sm:text-3xl">
         <TextGenerate words="Observations from the build." />
       </h2>
+      <p className="mt-4 text-[15px] leading-[1.8] text-ink-soft">
+        Long-form posts on Hashnode below. Shorter learnings, build notes, and what I&apos;m shipping on{" "}
+        <a
+          href="https://x.com/AyushPanda85699"
+          target="_blank"
+          rel="noreferrer"
+          className="font-medium text-accent underline decoration-accent/30 underline-offset-2 transition-colors hover:text-accent-hover"
+        >
+          X (@AyushPanda85699)
+        </a>
+        .
+      </p>
 
       <ul className="mt-10">
         {POSTS.map((p, i) => (

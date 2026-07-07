@@ -13,6 +13,8 @@ import { SectionLabel } from "./SectionLabel";
 import { TextGenerate } from "./effects/TextGenerate";
 import { SpotlightCard } from "./effects/Spotlight";
 import { ProjectCover, ProjectGallery } from "./ProjectGallery";
+import { ProjectDemoVideo } from "./ProjectDemoVideo";
+import { ProjectVideoCover } from "./ProjectVideoCover";
 import { PRODUCTION } from "@/data/projects";
 import { cn } from "@/lib/utils";
 
@@ -73,9 +75,12 @@ export function Projects() {
             >
               <SpotlightCard className={cn("transition-shadow duration-500", a.glow)}>
                 <div className={cn("pointer-events-none absolute inset-0 bg-gradient-to-br", a.bar)} />
-                {p.screenshots[0] && !open && (
-                  <ProjectCover shot={p.screenshots[0]} accent={p.accent} />
-                )}
+                {!open &&
+                  (p.demoVideoSrc ? (
+                    <ProjectVideoCover src={p.demoVideoSrc} title={p.title} accent={p.accent} />
+                  ) : (
+                    p.screenshots[0] && <ProjectCover shot={p.screenshots[0]} accent={p.accent} />
+                  ))}
                 <button
                   type="button"
                   onClick={() => setOpenId(open ? null : p.id)}
@@ -121,6 +126,11 @@ export function Projects() {
                       className="relative overflow-hidden"
                     >
                       <div className="border-t border-border-line/70 px-5 pb-5 pt-4 sm:px-6">
+                        {p.demoVideoSrc && (
+                          <div className="mb-6">
+                            <ProjectDemoVideo src={p.demoVideoSrc} title={p.title} accent={p.accent} active={open} />
+                          </div>
+                        )}
                         <div className="mb-6">
                           <ProjectGallery screenshots={p.screenshots} accent={p.accent} />
                         </div>

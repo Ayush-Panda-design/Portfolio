@@ -15,7 +15,7 @@ const NAV = [
 const SOCIALS = [
   { icon: Github, href: "https://github.com/Ayush-Panda-design", label: "GitHub" },
   { icon: Linkedin, href: "https://www.linkedin.com/in/ayush-panda-a04280215/", label: "LinkedIn" },
-  { icon: Twitter, href: "https://x.com/AyushPanda85699", label: "Twitter" },
+  { icon: Twitter, href: "https://x.com/AyushPanda85699", label: "X (learnings)" },
   { icon: Hashnode, href: "https://hashnode.com/@Ayush-Panda", label: "Hashnode" },
 ];
 

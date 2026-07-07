@@ -1,0 +1,122 @@
+WELLFOUND AI VIDEO INTERVIEW — SPEAKING SCRIPT
+(Ayush Panda · ~10–12 minutes total · Read naturally, don't rush)
+
+================================================================================
+BEFORE YOU RECORD
+================================================================================
+- Quiet room, face a window or lamp
+- Camera at eye level
+- Test mic on Wellfound first
+- It's OK to pause, smile, and speak slowly
+- Have portfolio open on another tab if needed
+
+================================================================================
+QUESTION 1: Tell us about yourself (~60 seconds)
+================================================================================
+
+Hi, I'm Ayush Panda. I'm a fifth-semester Computer Science student at VSSUT,
+Burla, in Odisha, India.
+
+I'm a full-stack developer. Over the last year I've built and deployed four
+live web applications — not tutorial projects, but real products with
+authentication, databases, APIs, and production deployment.
+
+My main stack is TypeScript, React, Next.js, Node.js, PostgreSQL, and MongoDB.
+
+I'm looking for a remote full-stack internship at a startup where I can ship
+real features and learn from a small team.
+
+You can see my work at ayushdev-five.vercel.app, and my GitHub is
+Ayush-Panda-design.
+
+================================================================================
+QUESTION 2: Tell us about a project you're proud of (~90 seconds)
+================================================================================
+
+The project I'm most proud of is Relvion AI — it's live at relvion-ai.vercel.app.
+
+It's a full-stack Gmail and Google Calendar workspace with AI triage, semantic
+search, and an agent that can take actions on the user's data.
+
+I built it with Next.js, TypeScript, PostgreSQL, and pgvector for vector
+search. For real-time updates I used a webhook-to-SSE pipeline.
+
+We also used this project in the Corsair Command Inbox Hackathon, where my
+team ranked third out of one hundred thirty teams, with a score of eighty-six
+out of one hundred.
+
+What I'm proud of is that I owned the full stack — frontend, backend, database,
+auth, AI integration, and deployment — and it works as a real product, not just a
+demo.
+
+================================================================================
+QUESTION 3: Another project / technical depth (~60 seconds)
+================================================================================
+
+Another project is EdinForm, at edinform.in — a SaaS form builder.
+
+It's a monorepo with Next.js, Express, tRPC, Drizzle, PostgreSQL, and Redis.
+Users can create forms, share them with QR codes, collect responses, and see
+analytics dashboards.
+
+I also built Votora — a real-time polling platform with React, Node, MongoDB,
+Socket.io, JWT auth, and Google OAuth. Multiple users can join live rooms and
+see votes update in real time.
+
+Across these projects I care about type-safe APIs, clean UI, and shipping
+software that actually runs in production.
+
+================================================================================
+QUESTION 4: Why do you want an internship? / Why a startup? (~45 seconds)
+================================================================================
+
+I want an internship because I've learned a lot by building on my own, and now
+I want to work on a real team with real users and deadlines.
+
+Startups are a good fit for me because I like owning features end to end,
+figuring things out, and shipping fast. I'm not looking for a big company with
+narrow tasks — I want to build products that people actually use.
+
+I'm based in India, open to remote work, and comfortable collaborating across
+time zones.
+
+================================================================================
+QUESTION 5: What are you looking for in your next role? (~30 seconds)
+================================================================================
+
+I'm looking for a remote full-stack internship where I can work on Next.js and
+Node, contribute to production code, and learn from experienced engineers.
+
+I want challenging problems, mentorship, and the chance to grow from shipping
+real features — not busywork.
+
+================================================================================
+CLOSING (~15 seconds)
+================================================================================
+
+Thank you for your time. I'm excited about the opportunity. My portfolio,
+GitHub, and resume are on my Wellfound profile. I'd love to contribute to your
+team. Thank you.
+
+================================================================================
+QUICK LINKS (say once if asked, or mention in intro)
+================================================================================
+Portfolio:  https://ayushdev-five.vercel.app
+GitHub:       https://github.com/Ayush-Panda-design
+Resume:       https://ayushdev-five.vercel.app/resume/Ayush_Panda_ATS_Resume.pdf
+X:            https://x.com/AyushPanda85699
+
+Projects:
+  EdinForm    https://edinform.in
+  ShipFlow AI https://shipflowai.in
+  Relvion AI  https://relvion-ai.vercel.app
+  Votora      https://votora-client-jaam.vercel.app
+
+================================================================================
+TIPS
+================================================================================
+- Speak 20% slower than normal
+- Look at the camera, not the screen
+- If you mess up: pause, breathe, start the sentence again
+- You can re-record answers on Wellfound if the option appears
+- Shirt is enough — no need for formal suit
