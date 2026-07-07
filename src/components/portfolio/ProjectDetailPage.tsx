@@ -9,6 +9,7 @@ import {
 import { Github } from "./icons";
 import { ProjectAgent } from "./ProjectAgent";
 import { ProjectGallery } from "./ProjectGallery";
+import { ProjectDemoVideo } from "./ProjectDemoVideo";
 import { ProjectValueFlow } from "./ProjectValueFlow";
 import { PROJECT_DETAILS } from "@/data/project-details";
 import type { ProductionProject } from "@/data/projects";
@@ -107,6 +108,11 @@ export function ProjectDetailPage({ project }: { project: ProductionProject }) {
             </MSection>
 
             <MSection {...(ready ? { ...reveal, className: "mb-10" } : { className: "mb-10" })}>
+              {project.demoVideoSrc && (
+                <div className="mb-8">
+                  <ProjectDemoVideo src={project.demoVideoSrc} title={project.title} accent={project.accent} />
+                </div>
+              )}
               <ProjectGallery screenshots={project.screenshots} accent={project.accent} />
             </MSection>
 

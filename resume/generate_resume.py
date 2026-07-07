@@ -130,7 +130,7 @@ def main():
             styles["contact"],
         ),
         Paragraph(
-            "pandaayush25305@gmail.com | ayushdev-five.vercel.app | github.com/Ayush-Panda-design | linkedin.com/in/ayush-panda-a04280215",
+            "pandaayush25305@gmail.com | ayushdev-five.vercel.app | x.com/AyushPanda85699 | github.com/Ayush-Panda-design | linkedin.com/in/ayush-panda-a04280215",
             styles["contact"],
         ),
         HRFlowable(width="100%", thickness=0.8, color=colors.HexColor("#bdbdbd"), spaceBefore=2, spaceAfter=8),
