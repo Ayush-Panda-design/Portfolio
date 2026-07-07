@@ -1,14 +1,6 @@
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
-import {
-  ArrowRightIcon as ArrowRight,
-  BotIcon as Bot,
-  ClapperboardIcon as Clapperboard,
-  SendIcon as Send,
-  SparklesIcon as Sparkles,
-  UserIcon as User,
-  ZapIcon as Zap,
-} from "lucide-react";
+import { BotIcon as Bot, SendIcon as Send, UserIcon as User } from "lucide-react";
 import { AgentMessageMarkdown } from "@/components/portfolio/AgentMessageMarkdown";
 import { Github } from "@/components/portfolio/icons";
 import { askProjectAgent } from "@/lib/api/project-agent.functions";
@@ -17,15 +9,6 @@ import type { ProductionProject } from "@/data/projects";
 import { cn } from "@/lib/utils";
 
 type Msg = { role: "user" | "assistant"; content: string };
-
-const ACCENT_GLOW: Record<string, string> = {
-  teal: "from-accent/50 via-cyan-400/20 to-sky-500/30",
-  violet: "from-violet-400/50 via-fuchsia-400/20 to-purple-500/30",
-  amber: "from-amber-400/50 via-orange-400/20 to-yellow-500/25",
-  pink: "from-pink-400/50 via-rose-400/20 to-fuchsia-500/30",
-};
-
-const CAPABILITIES = ["Source", "README", "Architecture", "Deploy"] as const;
 
 const CHAT_STORAGE_PREFIX = "portfolio-agent-chat-";
 
@@ -52,56 +35,38 @@ function loadStoredChat(projectId: string, intro: string): { messages: Msg[]; de
 function MessageBubble({
   message,
   agentName,
-  index,
 }: {
   message: Msg;
   agentName: string;
-  index: number;
 }) {
   const isUser = message.role === "user";
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 10, scale: 0.98 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{ duration: 0.35, delay: index * 0.04 }}
-      className={cn("flex gap-2.5", isUser ? "flex-row-reverse" : "flex-row")}
-    >
+    <div className={cn("flex gap-2.5", isUser ? "flex-row-reverse" : "flex-row")}>
       <span
         className={cn(
-          "mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border",
-          isUser
-            ? "border-accent/35 bg-accent/12 text-accent"
-            : "border-border-line bg-bg-elevated text-accent",
+          "mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full",
+          isUser ? "bg-accent/15 text-accent" : "bg-surface text-ink-soft",
         )}
       >
         {isUser ? <User size={13} /> : <Bot size={13} />}
       </span>
-      <div className={cn("min-w-0 max-w-[88%]", isUser ? "items-end" : "items-start")}>
-        <p
-          className={cn(
-            "mb-1 font-mono text-[8px] uppercase tracking-[0.16em]",
-            isUser ? "text-right text-ink-faint" : "text-accent/80",
-          )}
-        >
-          {isUser ? "You" : agentName}
-        </p>
+      <div className={cn("min-w-0 max-w-[90%]", isUser ? "text-right" : "text-left")}>
+        <p className="mb-1 text-[11px] text-ink-faint">{isUser ? "You" : agentName}</p>
         <div
           className={cn(
-            "rounded-2xl px-3.5 py-3 shadow-sm",
-            isUser
-              ? "border border-accent/25 bg-gradient-to-br from-accent/16 to-accent/6"
-              : "border border-border-line/90 bg-bg-elevated/90 backdrop-blur-sm",
+            "rounded-2xl px-3.5 py-2.5 text-left",
+            isUser ? "bg-accent/12 text-ink" : "bg-surface/80 text-ink",
           )}
         >
           {isUser ? (
-            <p className="text-[13px] leading-relaxed text-ink">{message.content}</p>
+            <p className="text-[13px] leading-relaxed">{message.content}</p>
           ) : (
             <AgentMessageMarkdown content={message.content} />
           )}
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }
 
@@ -109,23 +74,13 @@ export function ProjectAgent({ project }: { project: ProductionProject }) {
   const detail = PROJECT_DETAILS[project.id];
   if (!detail) return null;
 
-  const glow = ACCENT_GLOW[project.accent] ?? ACCENT_GLOW.teal;
-
   const stored = loadStoredChat(project.id, detail.agentIntro);
 
   const [messages, setMessages] = useState<Msg[]>(stored.messages);
   const [demoPlayed, setDemoPlayed] = useState(stored.demoPlayed);
-  const [askedQuestions, setAskedQuestions] = useState<Set<string>>(() => {
-    const asked = new Set<string>();
-    for (const m of stored.messages) {
-      if (m.role === "user") asked.add(m.content);
-    }
-    return asked;
-  });
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [filesUsed, setFilesUsed] = useState<number | null>(null);
-  const [contextTab, setContextTab] = useState<(typeof CAPABILITIES)[number]>("Source");
   const chatRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -144,7 +99,6 @@ export function ProjectAgent({ project }: { project: ProductionProject }) {
   const playDemo = () => {
     if (demoPlayed || loading) return;
     setDemoPlayed(true);
-    setAskedQuestions((prev) => new Set(prev).add(detail.agentDemo.question));
     setMessages((m) => [
       ...m,
       { role: "user", content: detail.agentDemo.question },
@@ -155,9 +109,13 @@ export function ProjectAgent({ project }: { project: ProductionProject }) {
   const send = async (text: string) => {
     const q = text.trim();
     if (!q || loading) return;
-    setInput("");
-    setAskedQuestions((prev) => new Set(prev).add(q));
 
+    if (q === detail.agentDemo.question && !demoPlayed) {
+      playDemo();
+      return;
+    }
+
+    setInput("");
     setMessages((prev) => [...prev, { role: "user", content: q }]);
     setLoading(true);
 
@@ -184,241 +142,120 @@ export function ProjectAgent({ project }: { project: ProductionProject }) {
     }
   };
 
+  const statusText =
+    filesUsed != null
+      ? `Scanned ${filesUsed} source files on last reply`
+      : "Answers from live GitHub source + project docs";
+
   return (
-    <div className="relative h-full">
-      {/* Ambient glow behind panel */}
-      <div
-        className={cn(
-          "pointer-events-none absolute -inset-4 rounded-3xl bg-gradient-to-br opacity-40 blur-2xl",
-          glow,
-        )}
-        aria-hidden
-      />
-
-      {/* Animated gradient border */}
-      <motion.div
-        initial={{ opacity: 0, y: 24 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="agent-border-glow relative flex h-full max-h-[calc(100vh-3rem)] flex-col rounded-[20px] p-[1px] shadow-[0_32px_80px_-24px_rgba(0,0,0,0.65)]"
-      >
-        <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-[19px] bg-bg-elevated">
-          {/* Top feature strip */}
-          <div className="relative shrink-0 overflow-hidden border-b border-border-line/80 bg-bg/80 px-4 py-2.5">
-            <div className="agent-panel-mesh pointer-events-none absolute inset-0 opacity-60" />
-            <div className="relative flex items-center justify-between gap-2">
-              <div className="flex items-center gap-1.5">
-                <Zap size={11} className="text-accent" />
-                <span className="font-mono text-[9px] font-semibold uppercase tracking-[0.2em] text-accent">
-                  Code-aware AI
-                </span>
-              </div>
-              <div className="flex items-center gap-1.5 rounded-full border border-emerald-500/25 bg-emerald-500/8 px-2 py-0.5">
-                <span className="agent-live-dot h-1.5 w-1.5 rounded-full bg-emerald-400" />
-                <span className="font-mono text-[8px] uppercase tracking-[0.12em] text-emerald-300/90">
-                  Live
-                </span>
-              </div>
+    <div className="flex h-full max-h-[calc(100vh-3rem)] flex-col overflow-hidden rounded-2xl border border-border-line bg-bg-elevated shadow-lg">
+      <header className="shrink-0 border-b border-border-line px-4 py-3.5">
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <div className="flex items-center gap-2">
+              <h3 className="font-display text-[15px] font-semibold text-ink">{detail.agentName}</h3>
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-medium text-emerald-400">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                Online
+              </span>
             </div>
-          </div>
-
-          {/* Header */}
-          <div className="shrink-0 border-b border-border-line/60 px-4 py-4">
-            <div className="flex items-start gap-3">
-              <div className="relative">
-                <span className="flex h-11 w-11 items-center justify-center rounded-2xl border border-accent/30 bg-gradient-to-br from-accent/20 to-accent/5 text-accent shadow-[0_0_24px_-4px_var(--color-accent-glow)]">
-                  <Sparkles size={18} />
-                </span>
-                <span className="absolute -bottom-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full border border-bg-elevated bg-emerald-500">
-                  <Bot size={9} className="text-bg" />
-                </span>
-              </div>
-              <div className="min-w-0 flex-1">
-                <h3 className="font-display text-[15px] font-bold leading-tight text-ink">
-                  {detail.agentName}
-                </h3>
-                <a
-                  href={`https://github.com/Ayush-Panda-design/${detail.repo}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="mt-1 inline-flex items-center gap-1 font-mono text-[10px] text-ink-faint transition-colors hover:text-accent"
-                >
-                  <Github size={10} />
-                  Ayush-Panda-design/{detail.repo}
-                </a>
-                <p className="mt-1.5 font-mono text-[9px] tracking-[0.06em] text-ink-faint">
-                  {filesUsed != null ? (
-                    <>
-                      <span className="text-ink-soft">Last scan · </span>
-                      <span className="text-accent">{filesUsed} files</span>
-                    </>
-                  ) : (
-                    <span>Reads live GitHub source on each question</span>
-                  )}
-                </p>
-              </div>
-            </div>
-
-            <div className="mt-3 flex gap-1 border-b border-border-line/60 pb-0">
-              {CAPABILITIES.map((cap) => (
-                <button
-                  key={cap}
-                  type="button"
-                  onClick={() => setContextTab(cap)}
-                  className={cn(
-                    "relative px-2.5 pb-2 font-mono text-[9px] uppercase tracking-[0.1em] transition-colors",
-                    contextTab === cap
-                      ? "text-accent"
-                      : "text-ink-faint hover:text-ink-soft",
-                  )}
-                >
-                  {cap}
-                  {contextTab === cap && (
-                    <span className="absolute inset-x-1 bottom-0 h-0.5 rounded-full bg-accent" />
-                  )}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Chat */}
-          <div className="agent-panel-mesh relative min-h-0 flex-1">
-            <div
-              ref={chatRef}
-              className="agent-scroll agent-chat-fade flex h-full max-h-[min(360px,50vh)] flex-col gap-4 overflow-y-auto px-4 py-4 lg:max-h-none"
+            <a
+              href={`https://github.com/Ayush-Panda-design/${detail.repo}`}
+              target="_blank"
+              rel="noreferrer"
+              className="mt-1 inline-flex items-center gap-1 text-[11px] text-ink-faint transition-colors hover:text-accent"
             >
-              {messages.map((m, i) => (
-                <MessageBubble key={`${m.role}-${i}`} message={m} agentName={detail.agentName} index={i} />
-              ))}
-
-              <AnimatePresence>
-                {!demoPlayed && (
-                  <motion.button
-                    type="button"
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 0.97 }}
-                    onClick={playDemo}
-                    className="group w-full rounded-2xl border border-violet-400/30 bg-gradient-to-br from-violet-500/12 via-violet-500/5 to-transparent p-4 text-left transition-all hover:border-violet-400/50 hover:from-violet-500/16"
-                  >
-                    <div className="flex items-center gap-2">
-                      <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-violet-500/15 text-violet-300 transition-transform group-hover:scale-105">
-                        <Clapperboard size={14} />
-                      </span>
-                      <div>
-                        <p className="font-mono text-[9px] uppercase tracking-[0.16em] text-violet-300">
-                          Demo preview · sample answer
-                        </p>
-                        <p className="mt-0.5 text-[12px] font-medium text-ink">
-                          &ldquo;{detail.agentDemo.question}&rdquo;
-                        </p>
-                      </div>
-                    </div>
-                    <p className="mt-2 text-[11px] leading-relaxed text-ink-faint">
-                      Instant preview — no API key needed. Click to see a formatted architecture answer.
-                    </p>
-                  </motion.button>
-                )}
-              </AnimatePresence>
-
-              {loading && (
-                <motion.div
-                  initial={{ opacity: 0, y: 6 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="flex gap-2.5"
-                >
-                  <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-border-line bg-bg-elevated text-accent">
-                    <Bot size={13} />
-                  </span>
-                  <div>
-                    <p className="mb-1 font-mono text-[8px] uppercase tracking-[0.16em] text-accent/80">
-                      {detail.agentName}
-                    </p>
-                    <div className="flex items-center gap-2 rounded-2xl border border-border-line bg-bg-elevated/90 px-4 py-3">
-                      <span className="font-mono text-[11px] text-ink-soft">Scanning source files</span>
-                      <span className="flex gap-1">
-                        {[0, 1, 2].map((d) => (
-                          <motion.span
-                            key={d}
-                            className="h-1 w-1 rounded-full bg-accent"
-                            animate={{ opacity: [0.25, 1, 0.25] }}
-                            transition={{ repeat: Infinity, duration: 1.1, delay: d * 0.18 }}
-                          />
-                        ))}
-                      </span>
-                    </div>
-                  </div>
-                </motion.div>
-              )}
-            </div>
-          </div>
-
-          {/* Input area */}
-          <div className="shrink-0 border-t-2 border-border-line/90 bg-bg/95 px-4 py-4 shadow-[0_-8px_32px_-8px_rgba(0,0,0,0.55)] backdrop-blur-sm">
-            <p className="mb-2.5 font-mono text-[9px] uppercase tracking-[0.18em] text-ink-faint">
-              Ask anything
-            </p>
-            <div className="mb-3 space-y-1.5">
-              {detail.suggestedQuestions.map((q) => {
-                const asked = askedQuestions.has(q);
-                return (
-                  <button
-                    key={q}
-                    type="button"
-                    onClick={() => send(q)}
-                    disabled={loading || asked}
-                    className={cn(
-                      "group flex w-full cursor-pointer items-center justify-between gap-2 rounded-xl border px-3 py-3 text-left transition-all active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-40",
-                      asked
-                        ? "border-accent/25 bg-accent/5"
-                        : "border-border-line/80 bg-surface/40 hover:border-accent/40 hover:bg-accent/8",
-                    )}
-                  >
-                    <span
-                      className={cn(
-                        "text-[11px] leading-snug",
-                        asked ? "text-accent" : "text-ink-soft group-hover:text-ink",
-                      )}
-                    >
-                      {asked ? "✓ " : ""}
-                      {q}
-                    </span>
-                    {!asked && (
-                      <ArrowRight
-                        size={12}
-                        className="shrink-0 text-ink-faint transition-all group-hover:translate-x-0.5 group-hover:text-accent"
-                      />
-                    )}
-                  </button>
-                );
-              })}
-            </div>
-
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                send(input);
-              }}
-              className="relative"
-            >
-              <input
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                placeholder="Type your question…"
-                className="w-full rounded-xl border border-border-line bg-bg/80 py-3 pl-4 pr-12 text-[13px] text-ink outline-none transition-shadow placeholder:text-ink-faint focus:border-accent/45 focus:shadow-[0_0_0_3px_rgba(94,234,212,0.12)]"
-              />
-              <button
-                type="submit"
-                disabled={loading || !input.trim()}
-                className="absolute right-1.5 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-lg bg-accent text-primary-foreground transition-all hover:bg-accent-hover disabled:opacity-35"
-                aria-label="Send message"
-              >
-                <Send size={14} />
-              </button>
-            </form>
+              <Github size={11} />
+              Ayush-Panda-design/{detail.repo}
+            </a>
+            <p className="mt-1 text-[11px] text-ink-faint">{statusText}</p>
           </div>
         </div>
-      </motion.div>
+      </header>
+
+      <div
+        ref={chatRef}
+        className="agent-scroll min-h-0 flex-1 space-y-4 overflow-y-auto px-4 py-4"
+      >
+        {messages.map((m, i) => (
+          <MessageBubble key={`${m.role}-${i}`} message={m} agentName={detail.agentName} />
+        ))}
+
+        <AnimatePresence>
+          {!demoPlayed && (
+            <motion.button
+              type="button"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={playDemo}
+              className="w-full rounded-xl border border-dashed border-border-line px-3 py-2.5 text-left text-[12px] text-ink-soft transition-colors hover:border-accent/35 hover:bg-surface/50 hover:text-ink"
+            >
+              Try a sample answer: &ldquo;{detail.agentDemo.question}&rdquo;
+            </motion.button>
+          )}
+        </AnimatePresence>
+
+        {loading && (
+          <div className="flex gap-2.5">
+            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-surface text-ink-soft">
+              <Bot size={13} />
+            </span>
+            <div className="rounded-2xl bg-surface/80 px-3.5 py-2.5">
+              <span className="text-[13px] text-ink-soft">Reading repository…</span>
+              <span className="ml-2 inline-flex gap-1 align-middle">
+                {[0, 1, 2].map((d) => (
+                  <motion.span
+                    key={d}
+                    className="inline-block h-1 w-1 rounded-full bg-ink-faint"
+                    animate={{ opacity: [0.3, 1, 0.3] }}
+                    transition={{ repeat: Infinity, duration: 1, delay: d * 0.15 }}
+                  />
+                ))}
+              </span>
+            </div>
+          </div>
+        )}
+      </div>
+
+      <footer className="shrink-0 border-t border-border-line bg-bg/80 px-4 py-3">
+        <div className="mb-2.5 flex flex-wrap gap-1.5">
+          {detail.suggestedQuestions.map((q) => (
+            <button
+              key={q}
+              type="button"
+              onClick={() => send(q)}
+              disabled={loading}
+              className="rounded-full border border-border-line bg-surface/40 px-2.5 py-1 text-[11px] text-ink-soft transition-colors hover:border-accent/30 hover:text-ink disabled:opacity-40"
+            >
+              {q}
+            </button>
+          ))}
+        </div>
+
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            send(input);
+          }}
+          className="flex items-center gap-2 rounded-xl border border-border-line bg-bg px-3 py-1.5 focus-within:border-accent/40"
+        >
+          <input
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder="Ask about architecture, auth, deploy…"
+            className="min-w-0 flex-1 bg-transparent py-2 text-[13px] text-ink outline-none placeholder:text-ink-faint"
+          />
+          <button
+            type="submit"
+            disabled={loading || !input.trim()}
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-accent text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-35"
+            aria-label="Send message"
+          >
+            <Send size={14} />
+          </button>
+        </form>
+      </footer>
     </div>
   );
 }
