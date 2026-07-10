@@ -3,8 +3,8 @@ import { SectionLabel } from "./SectionLabel";
 import { MovingBorder } from "./effects/MovingBorder";
 import { TextGenerate } from "./effects/TextGenerate";
 
-export const RESUME_PDF_PATH = "/resume/Ayush_Panda_ATS_Resume.pdf";
-export const RESUME_DOWNLOAD_NAME = "Ayush_Panda_ATS_Resume.pdf";
+export const RESUME_PDF_PATH = "/resume/Ayush_Panda_Resume.pdf";
+export const RESUME_DOWNLOAD_NAME = "Ayush_Panda_Resume.pdf";
 
 export function Resume() {
   return (
