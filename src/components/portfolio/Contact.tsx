@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { MailIcon as Mail, Send, Copy, Check, ArrowUpRight } from "lucide-react";
 import { Github, Linkedin, Twitter, Hashnode } from "./icons";
 import { SectionLabel } from "./SectionLabel";
@@ -52,7 +52,6 @@ export function Contact() {
   const [subject, setSubject] = useState(SUBJECTS[0]);
   const [message, setMessage] = useState("");
   const [sent, setSent] = useState(false);
-  const formRef = useRef<HTMLFormElement>(null);
 
   const copyEmail = async () => {
     try {
@@ -76,7 +75,8 @@ export function Contact() {
       `Hi Ayush,\n\nMy name is ${name}.\n\n${message}\n\nBest regards,\n${name}`
     );
     const sub = encodeURIComponent(subject);
-    window.location.href = `mailto:${EMAIL}?subject=${sub}&body=${body}`;
+    // Open in a new tab so the page doesn't navigate away
+    window.open(`mailto:${EMAIL}?subject=${sub}&body=${body}`, "_self");
 
     setSent(true);
     setToast("Opening your mail client…");
@@ -124,7 +124,7 @@ export function Contact() {
             className="pointer-events-none absolute -left-12 -top-12 h-48 w-48 rounded-full bg-accent/10 blur-3xl"
           />
 
-          <form ref={formRef} onSubmit={handleSend} className="relative space-y-4">
+          <form onSubmit={handleSend} className="relative space-y-4">
             {/* Name */}
             <div>
               <label
@@ -187,7 +187,7 @@ export function Contact() {
             </div>
 
             {/* Send button */}
-            <MovingBorder>
+            <MovingBorder containerClassName="w-full">
               <button
                 type="submit"
                 id="contact-send-btn"
@@ -258,7 +258,7 @@ export function Contact() {
           <div className="relative overflow-hidden rounded-2xl border border-border-line bg-surface p-5">
             <div
               aria-hidden
-              className="pointer-events-none absolute -bottom-6 -right-6 h-28 w-28 rounded-full bg-accent/8 blur-2xl"
+              className="pointer-events-none absolute -bottom-6 -right-6 h-28 w-28 rounded-full bg-accent/[0.08] blur-2xl"
             />
             <p className="mb-3 text-[11px] font-semibold uppercase tracking-widest text-ink-faint">
               Find me on
