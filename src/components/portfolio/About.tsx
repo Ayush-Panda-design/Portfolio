@@ -11,16 +11,27 @@ function Counter({ value, decimals = 0, suffix = "" }: { value: number; decimals
   const inView = useInView(ref, { once: true, margin: "-80px" });
   const mv = useMotionValue(0);
   const sv = useSpring(mv, { duration: 1.2 });
-  const [display, setDisplay] = useState("0");
 
   useEffect(() => {
     if (inView) mv.set(value);
   }, [inView, value, mv]);
-  useEffect(() => sv.on("change", (v) => setDisplay(v.toFixed(decimals))), [sv, decimals]);
 
+  useEffect(() => {
+    // Start at 0 on client side for the animation
+    if (ref.current && mv.get() === 0) {
+      ref.current.textContent = (0).toFixed(decimals) + suffix;
+    }
+    return sv.on("change", (v) => {
+      if (ref.current) {
+        ref.current.textContent = v.toFixed(decimals) + suffix;
+      }
+    });
+  }, [sv, decimals, suffix, mv]);
+
+  // Render the final value for SSR / bots so they see the real numbers
   return (
     <span ref={ref}>
-      {display}
+      {value}
       {suffix}
     </span>
   );
