@@ -1,18 +1,21 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect } from "react";
-import { Sidebar, MobileNav } from "@/components/portfolio/Sidebar";
-import { Hero } from "@/components/portfolio/Hero";
-import { TrustBar } from "@/components/portfolio/TrustBar";
-import { About } from "@/components/portfolio/About";
-import { Skills } from "@/components/portfolio/Skills";
-import { LearningPath } from "@/components/portfolio/LearningPath";
-import { Projects } from "@/components/portfolio/Projects";
-import { Blog } from "@/components/portfolio/Blog";
-import { Resume } from "@/components/portfolio/Resume";
-import { Contact } from "@/components/portfolio/Contact";
-import { Footer } from "@/components/portfolio/Footer";
-import { Cursor } from "@/components/portfolio/Cursor";
-import { scrollToSection } from "@/lib/scroll";
+import { useEffect, useState, type MouseEvent } from "react";
+import { flushSync } from "react-dom";
+import "@/components/jc/jc.css";
+import { SmoothScroll, scrollToId, ScrollProgress, Cursor, Preloader } from "@/components/jc/lib";
+import { Nav, TopBar, SoundToggle } from "@/components/jc/Nav";
+import { Hero } from "@/components/jc/Hero";
+import { Story } from "@/components/jc/Story";
+import { Journey } from "@/components/jc/Journey";
+import { Work } from "@/components/jc/Work";
+// import { Live } from "@/components/jc/Live"; // hidden for now
+import { Stack } from "@/components/jc/Stack";
+import { Process } from "@/components/jc/Process";
+import { Desk } from "@/components/jc/Desk";
+import { GitHub } from "@/components/jc/GitHub";
+import { Recognition } from "@/components/jc/Recognition";
+import { Contact } from "@/components/jc/Contact";
+import { Tracker, RouteChip } from "@/components/jc/Backdrop";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -31,34 +34,62 @@ export const Route = createFileRoute("/")({
 });
 
 function Index() {
+  const [mode, setMode] = useState<"night" | "day">("night");
+  const [ready, setReady] = useState(false);
+  const [active, setActive] = useState("home");
+
   useEffect(() => {
+    if (!ready) return;
     const hash = window.location.hash.replace(/^#/, "");
     if (!hash) return;
-    // Land on the section instantly when returning from a project page
-    requestAnimationFrame(() => scrollToSection(hash, { instant: true, updateHash: false }));
-  }, []);
+    const map: Record<string, string> = { projects: "work", skills: "stack", learning: "journey", blog: "life", intro: "top" };
+    requestAnimationFrame(() => scrollToId(map[hash] ?? hash, true));
+  }, [ready]);
+
+  // Theme switch: a circular reveal that grows from the button, plus a ripple ring
+  const toggle = (e: MouseEvent) => {
+    const next = mode === "night" ? "day" : "night";
+    const x = e.clientX, y = e.clientY;
+    const r = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
+    const ring = document.createElement("div");
+    ring.className = "jc-flash";
+    Object.assign(ring.style, { left: `${x}px`, top: `${y}px`, width: "20px", height: "20px", marginLeft: "-10px", marginTop: "-10px" });
+    document.body.appendChild(ring);
+    ring.animate([{ transform: "scale(1)", opacity: 0.9 }, { transform: `scale(${(r * 2) / 20})`, opacity: 0 }], { duration: 1100, easing: "cubic-bezier(.22,1,.36,1)" }).onfinish = () => ring.remove();
+
+    const apply = () => flushSync(() => setMode(next));
+    const doc = document as Document & { startViewTransition?: (cb: () => void) => { ready: Promise<void> } };
+    if (!doc.startViewTransition || matchMedia("(prefers-reduced-motion: reduce)").matches) return apply();
+    doc.startViewTransition(apply).ready.then(() => {
+      document.documentElement.animate(
+        { clipPath: [`circle(0px at ${x}px ${y}px)`, `circle(${r}px at ${x}px ${y}px)`] },
+        { duration: 1000, easing: "cubic-bezier(.65,0,.25,1)", pseudoElement: "::view-transition-new(root)" },
+      );
+    });
+  };
 
   return (
-    <main className="min-h-screen bg-bg text-ink">
+    <main className="jc" data-mode={mode}>
+      <Preloader onDone={() => setReady(true)} />
+      <SmoothScroll />
+      <Tracker onActive={setActive} />
+      <RouteChip active={active} />
+      <ScrollProgress />
       <Cursor />
-      <MobileNav />
-
-      <div className="mx-auto max-w-[1120px] px-6 sm:px-8 lg:flex lg:gap-16 lg:px-12">
-        <Sidebar />
-
-        <div className="w-full min-w-0 flex-1 space-y-2 pb-16 pt-20 lg:max-w-[640px] lg:py-24">
-          <Hero />
-          <TrustBar />
-          <Projects />
-          <Resume />
-          <About />
-          <Skills />
-          <Blog />
-          <LearningPath />
-          <Contact />
-          <Footer />
-        </div>
-      </div>
+      <TopBar mode={mode} onToggle={toggle} />
+      <SoundToggle />
+      <Nav resumeHref="/resume/Ayush_Panda_Resume.pdf" />
+      <Hero ready={ready} />
+      <Journey />
+      <Work />
+      {/* <Live /> — hidden for now; component kept in components/jc/Live.tsx */}
+      <Stack />
+      <Process />
+      <GitHub />
+      <Recognition />
+      <Story />
+      <Desk />
+      <Contact />
     </main>
   );
 }
